@@ -15,8 +15,26 @@
 .instructions/
 
 
+# --- Project-specific ignores ---
+
+# Never commit raw AppColl CSV exports (contain client data)
+data/appcoll_exports/*.csv
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
 # --- Exceptions ---
 # The .gitignore file itself should be version-controlled.
-# The '!' character negates a pattern, so this line un-ignores the .gitignore file.
-# Do not ignore the .gitignore file itself, as it should be version-controlled.
 !.gitignore
+# Keep directory placeholders
+!data/appcoll_exports/.gitkeep
+!vault_output/.gitkeep

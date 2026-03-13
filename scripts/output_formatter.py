@@ -1,0 +1,296 @@
+# scripts/output_formatter.py
+"""
+Builds the final Markdown output string from scored, task-enriched entries.
+"""
+
+import logging
+from datetime import date, datetime
+
+from config.globals import TASK_GENERATION_THRESHOLD
+
+log = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _fmt_date(d) -> str:
+    if d is None:
+        return "N/A"
+    if isinstance(d, date):
+        return d.strftime("%Y-%m-%d")
+    return str(d)
+
+
+def _days_remaining_str(deadline: date | None, today: date) -> str:
+    if deadline is None:
+        return "no deadline"
+    delta = (deadline - today).days
+    if delta < 0:
+        return f"{abs(delta)} days overdue"
+    if delta == 0:
+        return "0 days remaining — OVERDUE"
+    return f"{delta} day{'s' if delta != 1 else ''} remaining"
+
+
+def _entry_header_flag(entry: dict, today: date) -> str:
+    score = entry.get("_priority_score", 0)
+    deadline = entry.get("_effective_deadline")
+    if deadline is None:
+        return ""
+    if deadline <= today:
+        return " · ⚠️ OVERDUE"
+    days = (deadline - today).days
+    return f" · {days} day{'s' if days != 1 else ''} remaining"
+
+
+def _build_file_header(today: date, csv_meta: dict) -> str:
+    date_str = today.strftime("%Y-%m-%d")
+    csv_name = csv_meta.get("filename", "unknown")
+    csv_mod = csv_meta.get("modified")
+    if isinstance(csv_mod, datetime):
+        csv_mod_str = csv_mod.strftime("%Y-%m-%d %H:%M UTC")
+    else:
+        csv_mod_str = str(csv_mod) if csv_mod else "unknown"
+
+    return (
+        f"---\n"
+        f"date: {date_str}\n"
+        f"tags: [docket, patent, daily-review]\n"
+        f"aliases: [Daily Docket {date_str}]\n"
+        f"---\n\n"
+        f"# \U0001f4cb Patent Docket Daily Review \u2014 {date_str}\n\n"
+        f"_Generated automatically from AppColl export. "
+        f"Last CSV: `{csv_name}` (`{csv_mod_str}`)_\n\n"
+        f"---\n"
+    )
+
+
+def _build_todays_todo(entries: list[dict], today: date) -> str:
+    date_str = today.strftime("%Y-%m-%d")
+    lines: list[str] = [
+        f"\n## \u2705 Today's To Do\n",
+        f"> Items due **today** ({date_str}): filing deadlines AND tasks with a target date of today.\n",
+    ]
+
+    # Filing deadlines due today (score == 100 or deadline == today)
+    deadline_rows = []
+    for entry in entries:
+        dl = entry.get("_effective_deadline")
+        if dl == today:
+            deadline_rows.append(entry)
+
+    lines.append("\n### \U0001f4c1 Filing Deadlines Due Today\n")
+    if deadline_rows:
+        lines.append("| Docket No. | Type | Application No. | Country | Deadline | Score |")
+        lines.append("|---|---|---|---|---|---|")
+        for e in deadline_rows:
+            lines.append(
+                f"| {e.get('matter', 'N/A')} "
+                f"| {e.get('entry_type', 'N/A')} "
+                f"| {e.get('application_number', 'N/A')} "
+                f"| {e.get('country', e.get('country_full', 'N/A'))} "
+                f"| {_fmt_date(e.get('_effective_deadline'))} "
+                f"| {e.get('_priority_score', 0)} |"
+            )
+    else:
+        lines.append("_No filing deadlines due today._")
+
+    # Tasks due today
+    task_rows = []
+    for entry in entries:
+        for task in entry.get("_tasks", []):
+            if task.get("target_date") == today:
+                task_rows.append((entry, task))
+
+    lines.append("\n### \U0001f5d2\ufe0f Tasks Due Today\n")
+    if task_rows:
+        lines.append("| Docket No. | Type | Task | Subpriority |")
+        lines.append("|---|---|---|---|")
+        for e, t in task_rows:
+            lines.append(
+                f"| {e.get('matter', 'N/A')} "
+                f"| {e.get('entry_type', 'N/A')} "
+                f"| {t['display_name']} "
+                f"| {t['subpriority']} |"
+            )
+    else:
+        lines.append("_No tasks due today._")
+
+    lines.append("\n---")
+    return "\n".join(lines)
+
+
+def _build_task_block(task: dict, today: date) -> str:
+    """Build the Markdown block for a single task."""
+    lines: list[str] = []
+    sp = task["subpriority"]
+    td = _fmt_date(task.get("target_date"))
+    display = task["display_name"]
+
+    lines.append(f"\n##### {sp} \u2014 {td} \u2014 {display}\n")
+
+    # Overdue notice
+    if task.get("is_overdue"):
+        orig = _fmt_date(task.get("original_target_date"))
+        lines.append(f"> \u26a0\ufe0f **OVERDUE \u2014 Originally due {orig}. Treat as due TODAY.**\n")
+
+    # Help fields
+    help_label = task.get("help_label", "")
+    help_fields: dict = task.get("help_fields", {})
+    if help_fields:
+        if help_label:
+            lines.append(f"> **{help_label}**  ")
+        for label, value in help_fields.items():
+            lines.append(f"> - **{label}:** {value}  ")
+        lines.append("")  # blank line after blockquote
+
+    # Checkbox
+    lines.append(f"- [ ] {display}\n")
+    lines.append("---")
+
+    return "\n".join(lines)
+
+
+def _build_entry_block(entry: dict, today: date) -> str:
+    """Build the full Markdown block for one docket entry."""
+    letter = entry.get("_priority_letter", "?")
+    score = entry.get("_priority_score", 0)
+    matter = entry.get("matter", "N/A")
+    deadline = entry.get("_effective_deadline")
+    days_str = _days_remaining_str(deadline, today)
+    header_flag = _entry_header_flag(entry, today)
+
+    lines: list[str] = []
+    lines.append(f"\n### [{letter}] {matter} \u00b7 Score: {score}{header_flag}")
+
+    # Entry metadata
+    lines.append(f"**Type:** {entry.get('entry_type', 'N/A')}  ")
+    app_num = entry.get("application_number", "")
+    if app_num:
+        lines.append(f"**Application:** {app_num}  ")
+    country = entry.get("country") or entry.get("country_full", "")
+    if country:
+        lines.append(f"**Country:** {country}  ")
+    lines.append(f"**Deadline:** {_fmt_date(deadline)} *({days_str})*  ")
+    title = entry.get("title", "")
+    if title:
+        lines.append(f"**Title:** {title}  ")
+    family_id = entry.get("family_id", "")
+    if family_id:
+        lines.append(f"**Family ID:** {family_id}  ")
+    tier = entry.get("tier", "")
+    if tier:
+        lines.append(f"**Tier:** {tier}  ")
+    sep = entry.get("sep_status", "")
+    if sep:
+        lines.append(f"**SEP Status:** {sep}  ")
+
+    tasks: list[dict] = entry.get("_tasks", [])
+    if tasks:
+        lines.append("\n#### Tasks")
+        for task in tasks:
+            lines.append(_build_task_block(task, today))
+
+    return "\n".join(lines)
+
+
+def _build_priority_section(entries: list[dict], today: date) -> str:
+    threshold = TASK_GENERATION_THRESHOLD
+    priority_entries = [e for e in entries if e.get("_priority_score", 0) >= threshold]
+
+    lines: list[str] = [
+        f"\n## \U0001f534 Priority Docket Entries\n",
+        f"> Entries with priority score \u2265 {threshold}, ordered by descending score.  ",
+        f"> Tasks listed in descending subpriority order (most urgent first).\n",
+        "---",
+    ]
+
+    if not priority_entries:
+        lines.append("_No entries meet the priority threshold today._")
+    else:
+        for entry in priority_entries:
+            lines.append(_build_entry_block(entry, today))
+
+    return "\n".join(lines)
+
+
+def _build_monitored_section(entries: list[dict], today: date) -> str:
+    threshold = TASK_GENERATION_THRESHOLD
+    monitored = [e for e in entries if e.get("_priority_score", 0) < threshold
+                 and e.get("_priority_score", 0) > 0]
+
+    lines: list[str] = [
+        f"\n---\n",
+        f"## \U0001f4ca Monitored Entries (Below Task Threshold)\n",
+        f"> Score < {threshold}. No tasks generated yet. Watch deadlines.\n",
+    ]
+
+    if monitored:
+        lines.append("| Score | Docket No. | Type | Application No. | Country | Deadline | Days Remaining |")
+        lines.append("|---|---|---|---|---|---|---|")
+        for e in monitored:
+            deadline = e.get("_effective_deadline")
+            days_r = (deadline - today).days if deadline else None
+            days_display = str(days_r) if days_r is not None else "N/A"
+            country = e.get("country") or e.get("country_full", "N/A")
+            lines.append(
+                f"| {e.get('_priority_score', 0)} "
+                f"| {e.get('matter', 'N/A')} "
+                f"| {e.get('entry_type', 'N/A')} "
+                f"| {e.get('application_number', 'N/A')} "
+                f"| {country} "
+                f"| {_fmt_date(deadline)} "
+                f"| {days_display} |"
+            )
+    else:
+        lines.append("_No entries in the monitored range today._")
+
+    lines.append("\n---")
+    lines.append("_End of report._")
+    return "\n".join(lines)
+
+
+def _build_warnings_section(warnings: list[str]) -> str:
+    if not warnings:
+        return ""
+    lines = ["\n---\n", "## \u26a0\ufe0f Report Warnings\n"]
+    for w in warnings:
+        lines.append(f"- {w}")
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
+def build_markdown(
+    entries: list[dict],
+    today: date,
+    csv_meta: dict,
+    warnings: list[str] | None = None,
+) -> str:
+    """
+    Build the complete Markdown report string.
+
+    Parameters
+    ----------
+    entries  : list of scored, task-enriched entry dicts
+    today    : reference date
+    csv_meta : metadata dict from csv_loader
+    warnings : list of warning strings accumulated during the run
+    """
+    if warnings is None:
+        warnings = []
+
+    parts = [
+        _build_file_header(today, csv_meta),
+        _build_todays_todo(entries, today),
+        _build_priority_section(entries, today),
+        _build_monitored_section(entries, today),
+    ]
+    if warnings:
+        parts.append(_build_warnings_section(warnings))
+
+    return "\n".join(parts) + "\n"
