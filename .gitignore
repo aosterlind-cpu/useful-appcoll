@@ -6,13 +6,13 @@
 # (like .DS_Store on macOS) or local configuration folders (like .vscode/).
 #
 # The `**` pattern matches directories at any level.
-**/.*
 .DS_Store
 .vscode/
 .env
 .env*
 .env.*
-.instructions/
+.resources/
+.claude/
 
 
 # --- Project-specific ignores ---
