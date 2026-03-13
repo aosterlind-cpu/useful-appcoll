@@ -1,0 +1,22 @@
+# Ignore all files and directories.
+# This is a broad rule and will ignore everything in the repository directory
+# and all subdirectories.
+# Ignore all files and directories that begin with a period (dotfiles).
+# This is a common practice to avoid committing system-generated files
+# (like .DS_Store on macOS) or local configuration folders (like .vscode/).
+#
+# The `**` pattern matches directories at any level.
+**/.*
+.DS_Store
+.vscode/
+.env
+.env*
+.env.*
+.instructions/
+
+
+# --- Exceptions ---
+# The .gitignore file itself should be version-controlled.
+# The '!' character negates a pattern, so this line un-ignores the .gitignore file.
+# Do not ignore the .gitignore file itself, as it should be version-controlled.
+!.gitignore
