@@ -32,6 +32,9 @@ venv/
 .venv/
 env/
 
+# Debug screenshots from Playwright failures
+debug_screenshots/
+
 # --- Exceptions ---
 # The .gitignore file itself should be version-controlled.
 !.gitignore
