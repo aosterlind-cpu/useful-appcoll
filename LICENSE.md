@@ -1,30 +1,74 @@
 ## Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
 
+
+## License
+
 ```
 SPDX-License-Identifier: CC-BY-NC-SA-4.0
 ```
 
-# License
-
-This project is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
-
-Copyright (c) 2026 Alex Osterlind 
-
-## Permitted Uses:
-
-- **Share** — copy and redistribute the material in any medium or format
-- **Adapt** — refactor, transform, and build upon the material for any non-commercial purpose, provided it is available under a .
-
-The licensor cannot revoke these freedoms as long as you follow the license terms.
-
-## Under the following terms:
-
-- **Attribution** — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
-
-- **ShareAlike** — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
-
-- **No additional restrictions** — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+Copyright (c) 2026 Alex S Osterlind (aosterlind@ofinno.com)
 
 ---
 
-This is a human-readable summary of (and not a substitute for) the [full license text](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
+## Project Scope 
+
+This project is designed to meaningfully improve IP docket management of in-house IP counsel that use AppColl. AppColl is useless. Ideally this makes it useful.  
+
+The repository is public, and anyone is free to clone, modify, and adapt the code
+for their own use.
+
+However, the project is released under the **Creative Commons
+Attribution‑NonCommercial‑ShareAlike 4.0 International License (CC
+BY‑NC‑SA 4.0)** with the following intentions:
+
+## Permissions
+
+Permitted Use Cases:
+
+-   **Use** the code for personal, educational, or internal
+    organizational purposes.
+-   **Copy and redistribute** the material in any medium or format.
+-   **Adapt, modify, and build upon** the code.
+
+## Conditions
+
+If you use any part of this project (in whole or in part):
+
+1.  **Attribution Required**\
+    You must provide appropriate credit to the original author (Alex S Osterlind)
+    and include a reference to this repository.
+
+2.  **Non‑Commercial Use Only**\
+    You may **not** use this project or derivative works for commercial
+    purposes.
+
+3.  **ShareAlike**\
+    If you modify or build upon this project, you must distribute your
+    contributions under the **same or broader license** as this license (CC BY‑NC‑SA 4.0).
+
+4.  **No Additional Restrictions**\
+    Derivative works may **not** apply a license that restricts use
+    more than the terms of this license. Any redistributed or modified
+    versions must preserve the rights, uses, and conditions granted herein.
+
+5.  **Internal Use Exception**\
+    The above conditions do not apply to personal or other interal use.
+
+---
+
+## Intent
+
+This license is included to:
+
+-   Enable customization and extensions of this project.
+-   Prevent commercialization of this project.
+
+
+## Full License Text
+
+This project is licensed under the Creative Commons
+Attribution‑NonCommercial‑ShareAlike 4.0 International License.
+
+For the full legal text, see:
+https://creativecommons.org/licenses/by-nc-sa/4.0/
