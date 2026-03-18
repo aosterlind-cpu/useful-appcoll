@@ -124,8 +124,14 @@ See the comments at the top of `config/rules.yaml` for the operator reference an
 
 `config/task_help.yaml` maps each task's `help_key` to a list of AppColl fields shown inline with that task in the report.
 
+### _Note on Column Headers_
+
+Column headers from the CSV file are normalized and mapped to python names. The yaml files must refer to the python names. The column mapping is shown in `scripts/csv_loader.py` in the variable `COLUMN_MAP`. 
+
+
+
 ---
 
 ## Security Note
 
-Never commit raw AppColl CSV files or your `.env` file. Both are excluded by `.gitignore`. Use a **private** GitHub repository.
+AppColl password is locally stored as plain text in `.env`. 

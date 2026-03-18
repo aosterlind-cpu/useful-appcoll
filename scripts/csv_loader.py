@@ -328,7 +328,22 @@ def load_appcoll_csv(warnings: list[str] | None = None) -> tuple[list[dict], dic
     log.info("Loading CSV: %s", csv_path)
 
     try:
-        df = pd.read_csv(csv_path, dtype=str, keep_default_na=False, low_memory=False)
+        df = pd.read_csv(
+            csv_path,
+            dtype=str,
+            keep_default_na=False,
+            low_memory=False,
+            encoding="cp1252",
+        )
+    except UnicodeDecodeError:
+        # cp1252 covers Windows-exported CSVs; latin-1 accepts every byte value
+        df = pd.read_csv(
+            csv_path,
+            dtype=str,
+            keep_default_na=False,
+            low_memory=False,
+            encoding="latin-1",
+        )
     except Exception as exc:
         raise RuntimeError(f"Failed to read CSV {csv_path}: {exc}") from exc
 

@@ -22,360 +22,376 @@
 
 task_help:
 
-  review_office_action:
-    label: "Office Action Context"
-    fields:
-      - field: responsible_inventor
-        label: "Responsible Inventor"
-      - field: psa
-        label: "Prosecution Strategy"
-      - field: sep_status
-        label: "SEP Status"
-      - field: tier
-        label: "Patent Tier"
-      - field: art_unit
-        label: "Art Unit"
-      - field: examiner
-        label: "Examiner"
-      - field: number_of_claims
-        label: "No. Claims"
-      - field: independent_claims
-        label: "Independent Claims"
-      - field: patent_term_adjustment
-        label: "PTA (days)"
-
-  inventor_consultation:
-    label: "Inventor Contact Info"
-    fields:
-      - field: responsible_inventor
-        label: "Responsible Inventor"
-      - field: lead_attorney
-        label: "Lead Attorney"
-      - field: partner
-        label: "Partner"
-      - field: psa
-        label: "Prosecution Strategy"
-      - field: technologies
-        label: "Technology Area"
-
-  draft_response:
-    label: "Drafting Context"
-    fields:
-      - field: responsible_inventor
-        label: "Responsible Inventor"
-      - field: psa
-        label: "Prosecution Strategy"
-      - field: lead_attorney
-        label: "Lead Attorney"
-      - field: law_firm
-        label: "Law Firm"
-      - field: foreign_associate
-        label: "Foreign Associate"
-      - field: terminal_disclaimer
-        label: "Terminal Disclaimer"
-      - field: number_of_claims
-        label: "No. Claims"
-
-  finalize_response:
-    label: "Finalization Context"
-    fields:
-      - field: responsible_inventor
-        label: "Responsible Inventor"
-      - field: lead_attorney
-        label: "Lead Attorney"
-      - field: client
-        label: "Client"
-      - field: psa
-        label: "Prosecution Strategy"
-
-  client_approval:
-    label: "Client / Authorization"
-    fields:
-      - field: client
-        label: "Client"
-      - field: partner
-        label: "Partner"
-      - field: lead_attorney
-        label: "Lead Attorney"
-      - field: fees_cap
-        label: "Fees Cap"
-      - field: budget_hours
-        label: "Budget Hours"
-
-  file_with_uspto:
-    label: "Filing Details"
+  us_oa_response_sep:
+    label: "US OA Response - SEP"
     fields:
       - field: application_number
-        label: "Application No."
-      - field: confirmation_number
-        label: "Confirmation No."
-      - field: entity_status
-        label: "Entity Status"
-      - field: lead_attorney
-        label: "Lead Attorney"
-      - field: paralegal
-        label: "Paralegal"
-
-  sep_standard_mapping:
-    label: "SEP / Standards Context"
-    fields:
+        label: "Appn No."
       - field: sep_status
         label: "SEP Status"
-      - field: relevant_standards_doc
-        label: "Relevant Standards Doc"
-      - field: avanci_status
-        label: "Avanci Status"
-      - field: philips_status
-        label: "Philips Status"
-      - field: tier
-        label: "Patent Tier"
-      - field: responsible_inventor
-        label: "Responsible Inventor"
       - field: psa
         label: "Prosecution Strategy"
-
-  avanci_enrollment:
-    label: "Avanci / Pool Status"
-    fields:
-      - field: avanci_status
-        label: "Avanci Status"
-      - field: tier
-        label: "Tier"
-      - field: license_project
-        label: "License Project"
-      - field: sep_status
-        label: "SEP Status"
-
-  sep_claim_scope:
-    label: "SEP Claim Scope"
-    fields:
-      - field: relevant_standards_doc
-        label: "Relevant Standards Doc"
-      - field: sep_status
-        label: "SEP Status"
-      - field: number_of_claims
-        label: "No. Claims"
-      - field: independent_claims
-        label: "Independent Claims"
-      - field: psa
-        label: "Prosecution Strategy"
-
-  psa_review:
-    label: "PSA / Strategy"
-    fields:
-      - field: psa
-        label: "PSA"
-      - field: tier
-        label: "Tier"
-      - field: sep_status
-        label: "SEP Status"
-      - field: lead_attorney
-        label: "Lead Attorney"
-      - field: partner
-        label: "Partner"
-
-  national_phase_countries:
-    label: "PCT National Phase"
-    fields:
+      - field: respond_by
+        label: "Response Due Date"
+      - field: final_due
+        label: "Final Due Date"
       - field: responsible_inventor
         label: "Responsible Inventor"
-      - field: intl_search_auth
-        label: "ISA"
-      - field: pph_qualified
-        label: "PPH Qualified"
-      - field: earliest_benefit_date
-        label: "Earliest Priority Date"
-      - field: client
-        label: "Client"
-      - field: psa
-        label: "Prosecution Strategy"
 
-  foreign_associate_engagement:
-    label: "Foreign Associate"
-    fields:
-      - field: foreign_associate
-        label: "Foreign Associate"
-      - field: law_firm
-        label: "Law Firm"
-      - field: country
-        label: "Country"
-      - field: client
-        label: "Client"
+  # review_office_action:
+  #   label: "Office Action Context"
+  #   fields:
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
+  #     - field: sep_status
+  #       label: "SEP Status"
+  #     - field: tier
+  #       label: "Patent Tier"
+  #     - field: art_unit
+  #       label: "Art Unit"
+  #     - field: examiner
+  #       label: "Examiner"
+  #     - field: number_of_claims
+  #       label: "No. Claims"
+  #     - field: independent_claims
+  #       label: "Independent Claims"
+  #     - field: patent_term_adjustment
+  #       label: "PTA (days)"
 
-  filing_package:
-    label: "Filing Package"
-    fields:
-      - field: application_number
-        label: "Application No."
-      - field: title
-        label: "Title"
-      - field: inventors
-        label: "Inventors"
-      - field: filing_date
-        label: "Filing Date"
-      - field: entity_status
-        label: "Entity Status"
+  # inventor_consultation:
+  #   label: "Inventor Contact Info"
+  #   fields:
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+  #     - field: partner
+  #       label: "Partner"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
+  #     - field: technologies
+  #       label: "Technology Area"
 
-  filing_confirmation:
-    label: "Filing Confirmation"
-    fields:
-      - field: foreign_associate
-        label: "Foreign Associate"
-      - field: application_number
-        label: "Application No."
-      - field: lead_attorney
-        label: "Lead Attorney"
+  # draft_response:
+  #   label: "Drafting Context"
+  #   fields:
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+  #     - field: law_firm
+  #       label: "Law Firm"
+  #     - field: foreign_associate
+  #       label: "Foreign Associate"
+  #     - field: terminal_disclaimer
+  #       label: "Terminal Disclaimer"
+  #     - field: number_of_claims
+  #       label: "No. Claims"
 
-  docket_foreign_deadlines:
-    label: "Docketing"
-    fields:
-      - field: family_id
-        label: "Family ID"
-      - field: country
-        label: "Country"
-      - field: attorney_ref
-        label: "Attorney Ref"
+  # finalize_response:
+  #   label: "Finalization Context"
+  #   fields:
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+  #     - field: client
+  #       label: "Client"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
 
-  prosecution_history_review:
-    label: "Prosecution History"
-    fields:
-      - field: first_office_action
-        label: "First OA Date"
-      - field: allowance_date
-        label: "Allowance Date"
-      - field: psa
-        label: "Prosecution Strategy"
-      - field: terminal_disclaimer
-        label: "Terminal Disclaimer"
+  # client_approval:
+  #   label: "Client / Authorization"
+  #   fields:
+  #     - field: client
+  #       label: "Client"
+  #     - field: partner
+  #       label: "Partner"
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+  #     - field: fees_cap
+  #       label: "Fees Cap"
+  #     - field: budget_hours
+  #       label: "Budget Hours"
 
-  review_final_oa:
-    label: "Final OA Context"
-    fields:
-      - field: responsible_inventor
-        label: "Responsible Inventor"
-      - field: psa
-        label: "Prosecution Strategy"
-      - field: tier
-        label: "Patent Tier"
-      - field: art_unit
-        label: "Art Unit"
-      - field: examiner
-        label: "Examiner"
-      - field: patent_term_adjustment
-        label: "PTA (days)"
-      - field: sep_status
-        label: "SEP Status"
+  # file_with_uspto:
+  #   label: "Filing Details"
+  #   fields:
+  #     - field: application_number
+  #       label: "Application No."
+  #     - field: confirmation_number
+  #       label: "Confirmation No."
+  #     - field: entity_status
+  #       label: "Entity Status"
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+  #     - field: paralegal
+  #       label: "Paralegal"
 
-  inventor_review:
-    label: "Inventor Review"
-    fields:
-      - field: responsible_inventor
-        label: "Responsible Inventor"
-      - field: lead_attorney
-        label: "Lead Attorney"
-      - field: technologies
-        label: "Technology Area"
+  # sep_standard_mapping:
+  #   label: "SEP / Standards Context"
+  #   fields:
+  #     - field: sep_status
+  #       label: "SEP Status"
+  #     - field: relevant_standards_doc
+  #       label: "Relevant Standards Doc"
+  #     - field: avanci_status
+  #       label: "Avanci Status"
+  #     - field: philips_status
+  #       label: "Philips Status"
+  #     - field: tier
+  #       label: "Patent Tier"
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
 
-  issue_fee_calculation:
-    label: "Issue Fee / Maintenance"
-    fields:
-      - field: entity_status
-        label: "Entity Status"
-      - field: patent_term_adjustment
-        label: "PTA (days)"
-      - field: terminal_disclaimer
-        label: "Terminal Disclaimer"
-      - field: application_number
-        label: "Application No."
-      - field: allowance_date
-        label: "Allowance Date"
+  # avanci_enrollment:
+  #   label: "Avanci / Pool Status"
+  #   fields:
+  #     - field: avanci_status
+  #       label: "Avanci Status"
+  #     - field: tier
+  #       label: "Tier"
+  #     - field: license_project
+  #       label: "License Project"
+  #     - field: sep_status
+  #       label: "SEP Status"
 
-  allowed_claims_review:
-    label: "Allowed Claims"
-    fields:
-      - field: number_of_claims
-        label: "No. Claims"
-      - field: independent_claims
-        label: "Independent Claims"
-      - field: responsible_inventor
-        label: "Responsible Inventor"
-      - field: client
-        label: "Client"
+  # sep_claim_scope:
+  #   label: "SEP Claim Scope"
+  #   fields:
+  #     - field: relevant_standards_doc
+  #       label: "Relevant Standards Doc"
+  #     - field: sep_status
+  #       label: "SEP Status"
+  #     - field: number_of_claims
+  #       label: "No. Claims"
+  #     - field: independent_claims
+  #       label: "Independent Claims"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
 
-  issue_fee_preparation:
-    label: "Issue Fee Preparation"
-    fields:
-      - field: application_number
-        label: "Application No."
-      - field: confirmation_number
-        label: "Confirmation No."
-      - field: entity_status
-        label: "Entity Status"
-      - field: paralegal
-        label: "Paralegal"
-      - field: lead_attorney
-        label: "Lead Attorney"
+  # psa_review:
+  #   label: "PSA / Strategy"
+  #   fields:
+  #     - field: psa
+  #       label: "PSA"
+  #     - field: tier
+  #       label: "Tier"
+  #     - field: sep_status
+  #       label: "SEP Status"
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+  #     - field: partner
+  #       label: "Partner"
 
-  maintenance_fee_decision:
-    label: "Maintenance Decision"
-    fields:
-      - field: patent_number
-        label: "Patent No."
-      - field: client
-        label: "Client"
-      - field: partner
-        label: "Partner"
-      - field: tier
-        label: "Tier"
-      - field: license_project
-        label: "License Project"
-      - field: avanci_status
-        label: "Avanci Status"
+  # national_phase_countries:
+  #   label: "PCT National Phase"
+  #   fields:
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: intl_search_auth
+  #       label: "ISA"
+  #     - field: pph_qualified
+  #       label: "PPH Qualified"
+  #     - field: earliest_benefit_date
+  #       label: "Earliest Priority Date"
+  #     - field: client
+  #       label: "Client"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
 
-  partner_escalation:
-    label: "Partner Escalation"
-    fields:
-      - field: partner
-        label: "Partner"
-      - field: client
-        label: "Client"
-      - field: tier
-        label: "Tier"
-      - field: sep_status
-        label: "SEP Status"
-      - field: psa
-        label: "PSA"
+  # foreign_associate_engagement:
+  #   label: "Foreign Associate"
+  #   fields:
+  #     - field: foreign_associate
+  #       label: "Foreign Associate"
+  #     - field: law_firm
+  #       label: "Law Firm"
+  #     - field: country
+  #       label: "Country"
+  #     - field: client
+  #       label: "Client"
 
-  budget_review:
-    label: "Budget"
-    fields:
-      - field: client
-        label: "Client"
-      - field: fees_cap
-        label: "Fees Cap"
-      - field: budget_hours
-        label: "Budget Hours"
-      - field: actual_expense
-        label: "Actual Expense"
+  # filing_package:
+  #   label: "Filing Package"
+  #   fields:
+  #     - field: application_number
+  #       label: "Application No."
+  #     - field: title
+  #       label: "Title"
+  #     - field: inventors
+  #       label: "Inventors"
+  #     - field: filing_date
+  #       label: "Filing Date"
+  #     - field: entity_status
+  #       label: "Entity Status"
 
-  ids_collection:
-    label: "IDS Reference Collection"
-    fields:
-      - field: lead_attorney
-        label: "Lead Attorney"
-      - field: paralegal
-        label: "Paralegal"
-      - field: family_id
-        label: "Family ID"
-      - field: relevant_standards_doc
-        label: "Relevant Standards Doc"
+  # filing_confirmation:
+  #   label: "Filing Confirmation"
+  #   fields:
+  #     - field: foreign_associate
+  #       label: "Foreign Associate"
+  #     - field: application_number
+  #       label: "Application No."
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
 
-  ids_preparation:
-    label: "IDS Preparation"
-    fields:
-      - field: application_number
-        label: "Application No."
-      - field: entity_status
-        label: "Entity Status"
-      - field: paralegal
-        label: "Paralegal"
+  # docket_foreign_deadlines:
+  #   label: "Docketing"
+  #   fields:
+  #     - field: family_id
+  #       label: "Family ID"
+  #     - field: country
+  #       label: "Country"
+  #     - field: attorney_ref
+  #       label: "Attorney Ref"
+
+  # prosecution_history_review:
+  #   label: "Prosecution History"
+  #   fields:
+  #     - field: first_office_action
+  #       label: "First OA Date"
+  #     - field: allowance_date
+  #       label: "Allowance Date"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
+  #     - field: terminal_disclaimer
+  #       label: "Terminal Disclaimer"
+
+  # review_final_oa:
+  #   label: "Final OA Context"
+  #   fields:
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: psa
+  #       label: "Prosecution Strategy"
+  #     - field: tier
+  #       label: "Patent Tier"
+  #     - field: art_unit
+  #       label: "Art Unit"
+  #     - field: examiner
+  #       label: "Examiner"
+  #     - field: patent_term_adjustment
+  #       label: "PTA (days)"
+  #     - field: sep_status
+  #       label: "SEP Status"
+
+  # inventor_review:
+  #   label: "Inventor Review"
+  #   fields:
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+  #     - field: technologies
+  #       label: "Technology Area"
+
+  # issue_fee_calculation:
+  #   label: "Issue Fee / Maintenance"
+  #   fields:
+  #     - field: entity_status
+  #       label: "Entity Status"
+  #     - field: patent_term_adjustment
+  #       label: "PTA (days)"
+  #     - field: terminal_disclaimer
+  #       label: "Terminal Disclaimer"
+  #     - field: application_number
+  #       label: "Application No."
+  #     - field: allowance_date
+  #       label: "Allowance Date"
+
+  # allowed_claims_review:
+  #   label: "Allowed Claims"
+  #   fields:
+  #     - field: number_of_claims
+  #       label: "No. Claims"
+  #     - field: independent_claims
+  #       label: "Independent Claims"
+  #     - field: responsible_inventor
+  #       label: "Responsible Inventor"
+  #     - field: client
+  #       label: "Client"
+
+  # issue_fee_preparation:
+  #   label: "Issue Fee Preparation"
+  #   fields:
+  #     - field: application_number
+  #       label: "Application No."
+  #     - field: confirmation_number
+  #       label: "Confirmation No."
+  #     - field: entity_status
+  #       label: "Entity Status"
+  #     - field: paralegal
+  #       label: "Paralegal"
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+
+  # maintenance_fee_decision:
+  #   label: "Maintenance Decision"
+  #   fields:
+  #     - field: patent_number
+  #       label: "Patent No."
+  #     - field: client
+  #       label: "Client"
+  #     - field: partner
+  #       label: "Partner"
+  #     - field: tier
+  #       label: "Tier"
+  #     - field: license_project
+  #       label: "License Project"
+  #     - field: avanci_status
+  #       label: "Avanci Status"
+
+  # partner_escalation:
+  #   label: "Partner Escalation"
+  #   fields:
+  #     - field: partner
+  #       label: "Partner"
+  #     - field: client
+  #       label: "Client"
+  #     - field: tier
+  #       label: "Tier"
+  #     - field: sep_status
+  #       label: "SEP Status"
+  #     - field: psa
+  #       label: "PSA"
+
+  # budget_review:
+  #   label: "Budget"
+  #   fields:
+  #     - field: client
+  #       label: "Client"
+  #     - field: fees_cap
+  #       label: "Fees Cap"
+  #     - field: budget_hours
+  #       label: "Budget Hours"
+  #     - field: actual_expense
+  #       label: "Actual Expense"
+
+  # ids_collection:
+  #   label: "IDS Reference Collection"
+  #   fields:
+  #     - field: lead_attorney
+  #       label: "Lead Attorney"
+  #     - field: paralegal
+  #       label: "Paralegal"
+  #     - field: family_id
+  #       label: "Family ID"
+  #     - field: relevant_standards_doc
+  #       label: "Relevant Standards Doc"
+
+  # ids_preparation:
+  #   label: "IDS Preparation"
+  #   fields:
+  #     - field: application_number
+  #       label: "Application No."
+  #     - field: entity_status
+  #       label: "Entity Status"
+  #     - field: paralegal
+  #       label: "Paralegal"

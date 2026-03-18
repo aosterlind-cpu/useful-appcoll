@@ -15,6 +15,9 @@ fi
 # Activate virtual environment
 source "$PROJ_DIR/.venv/bin/activate"
 
+# Ensure project root is on the Python path so 'import config' works
+export PYTHONPATH="$PROJ_DIR"
+
 # Append all output to logs/docket.log
 LOG_DIR="$PROJ_DIR/logs"
 mkdir -p "$LOG_DIR"
