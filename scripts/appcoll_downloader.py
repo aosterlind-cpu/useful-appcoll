@@ -191,19 +191,34 @@ def download_appcoll_csv() -> Path:
             log.info("Navigating to Tasks page: %s", TASKS_URL)
             page.goto(TASKS_URL, wait_until="networkidle")
 
-            # Step 5 — Click the export button and intercept the download
+            # Step 5 — Click the export button to open the export popup
             log.info("Looking for CSV export button...")
             try:
-                with page.expect_download(timeout=TIMEOUT_MS) as dl_info:
-                    _click_first_matching(page, EXPORT_BUTTON_SELECTORS, "CSV export button")
-                download = dl_info.value
+                _click_first_matching(page, EXPORT_BUTTON_SELECTORS, "CSV export button")
             except RuntimeError:
                 _screenshot(page, "export_button_error")
                 raise
+
+            # Step 5b — Confirm in the export popup and intercept the download.
+            #
+            # Clicking the export button opens a modal with:
+            #   File Type:  "AppColl Tasks (CSV)"  (default — leave as-is)
+            #   Export:     "Visible information only"  (default — leave as-is)
+            #
+            # The confirm button is:
+            #   <input type="submit" id="ctl00_ExportOk"
+            #          name="ctl00$ExportOk" onclick="onExportButtonClick(event);">
+            log.info("Waiting for export popup confirm button...")
+            try:
+                with page.expect_download(timeout=TIMEOUT_MS) as dl_info:
+                    popup_btn = page.locator('input[id="ctl00_ExportOk"]').first
+                    popup_btn.wait_for(state="visible", timeout=TIMEOUT_MS)
+                    popup_btn.click()
+                download = dl_info.value
             except PlaywrightTimeoutError:
-                _screenshot(page, "download_timeout")
+                _screenshot(page, "popup_export_timeout")
                 raise RuntimeError(
-                    "Timed out waiting for CSV download after clicking export button."
+                    "Timed out waiting for export popup or CSV download after clicking confirm."
                 )
 
             # Step 6 — Save to destination
