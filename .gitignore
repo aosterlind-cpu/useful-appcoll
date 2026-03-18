@@ -35,6 +35,9 @@ env/
 # Debug screenshots from Playwright failures
 debug_screenshots/
 
+# Local run logs
+logs/
+
 # --- Exceptions ---
 # The .gitignore file itself should be version-controlled.
 !.gitignore

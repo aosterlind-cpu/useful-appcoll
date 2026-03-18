@@ -13,7 +13,7 @@ Copyright (c) 2026 Alex S Osterlind (aosterlind@ofinno.com)
 
 ## Project Scope 
 
-This project is designed to meaningfully improve IP docket management of in-house IP counsel that use AppColl. AppColl is useless. Ideally this makes it useful.  
+This project is designed to improve workflow with IP docket management platform AppColl.  
 
 The repository is public, and anyone is free to clone, modify, and adapt the code
 for their own use.
@@ -53,7 +53,8 @@ If you use any part of this project (in whole or in part):
     versions must preserve the rights, uses, and conditions granted herein.
 
 5.  **Internal Use Exception**\
-    The above conditions do not apply to personal or other interal use.
+    The above conditions do not apply to personal or other internal uses
+    of this project.
 
 ---
 
