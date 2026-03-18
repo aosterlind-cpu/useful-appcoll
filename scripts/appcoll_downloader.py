@@ -25,30 +25,33 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 log = logging.getLogger(__name__)
 
 LOGIN_URL = "https://login.appcoll.com/"
-TASKS_URL = "https://login.appcoll.com/Tasks.aspx"
+TASKS_URL = "https://login.appcoll.com/Tasks.aspx?islogin=1"
 DOWNLOAD_DIR = Path("data/appcoll_exports")
 SCREENSHOT_DIR = Path("debug_screenshots")
 TIMEOUT_MS = 30_000  # 30 seconds per action
 
 # Selector lists — tried in order; first match wins.
 EMAIL_SELECTORS = [
-    'input[type="email"]',
-    'input[name="Email"]',
-    'input[id="Email"]',
-    'input[placeholder*="email" i]',
+    'input[type="text"]',
+    'input[name="LoginBox$UserName"]',
+    'input[id="LoginBox_UserName"]',
+    'input[placeholder*="Username" i]',
     'input[autocomplete="email"]',
 ]
 
 PASSWORD_SELECTORS = [
     'input[type="password"]',
-    'input[name="Password"]',
-    'input[id="Password"]',
-    'input[placeholder*="password" i]',
+    'input[name="LoginBox$Password"]',
+    'input[id="LoginBox_Password"]',
+    'input[placeholder*="Password" i]',
 ]
 
 LOGIN_BUTTON_SELECTORS = [
     'button[type="submit"]',
     'input[type="submit"]',
+    'input[name="LoginBox$LoginButton"]',
+    'input[id="LoginBox_LoginButton"]',
+    'input[value="Login"]',
     'button:has-text("Log in")',
     'button:has-text("Login")',
     'button:has-text("Sign in")',
@@ -57,14 +60,16 @@ LOGIN_BUTTON_SELECTORS = [
 
 EXPORT_BUTTON_SELECTORS = [
     # Telerik RadGrid / standard grid export buttons
-    'input[title*="CSV" i]',
+    'input[title*="Export information to CSV file" i]',
     'input[title*="Export" i]',
     'a[title*="CSV" i]',
     'a[title*="Export" i]',
     'button[title*="CSV" i]',
     'button[title*="Export" i]',
     # Image-based toolbar buttons (common in older ASP.NET apps)
-    'img[title*="CSV" i]',
+    'img[title*="Export information to CSV file" i]',
+    'img[name="ctl00$ExportButton"]',
+    'img[id="ctl00_ExportButton"]',
     'img[title*="Export" i]',
     'img[alt*="CSV" i]',
     'img[alt*="Export" i]',
