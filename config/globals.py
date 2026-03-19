@@ -96,3 +96,4 @@ DATE_PARSE_FORMATS: list[str] = [
     "%B %d, %Y",
     "%d-%b-%Y",
 ]
+

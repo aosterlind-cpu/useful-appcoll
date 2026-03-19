@@ -129,7 +129,7 @@ def _build_task_block(task: dict, today: date) -> str:
     display = task["display_name"]
 
     # Checkbox first
-    lines.append(f"- [ ] {display}")
+    lines.append(f"- [ ] **{display}**")
 
     # Due date + overdue info on next line
     due_line = f"  *{sp} \u00b7 Due: {td}"
@@ -187,15 +187,21 @@ def _build_entry_block(entry: dict, today: date) -> str:
 
     # SEP Status, PStrat, Avanci on one line
     sep = entry.get("sep_status") or ""
+    if isinstance(sep, str):
+        sep = sep.strip()
     psa = entry.get("psa") or ""
+    if isinstance(psa, str):
+        psa = psa.strip()
     avanci = entry.get("avanci_status") or ""
+    if isinstance(avanci, str):
+        avanci = avanci.strip()
     if sep or psa or avanci:
         parts = []
-        if sep:
+        if sep and sep != "":
             parts.append(f"**SEP Status:** {sep}")
-        if psa:
+        if psa and psa != "":
             parts.append(f"**PStrat:** {psa}")
-        if avanci:
+        if avanci and avanci != "":
             parts.append(f"**Avanci:** {avanci}")
         lines.append("  \u00b7  ".join(parts) + "  ")
 

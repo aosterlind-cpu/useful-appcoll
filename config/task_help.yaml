@@ -23,19 +23,10 @@
 task_help:
 
   us_oa_sep_review_inventor_meeting:
-    label: "US OA Response - SEP"
+    label: "SEP OA - Inventor Meeting Info"
     fields:
-      - field: application_number
-        label: "Appn No."
-      - field: sep_status
-        label: "SEP Status"
-      - field: psa
-        label: "Prosecution Strategy"
-      - field: respond_by
-        label: "Response Due Date"
-      - field: final_due
-        label: "Final Due Date"
       - field: responsible_inventor
         label: "Responsible Inventor"
+      
 
 

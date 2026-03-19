@@ -3,3 +3,6 @@ APPCOLL_PASSWORD=your_appcoll_password_here
 
 # Optional: override vault output path (defaults to ~/Documents/ObsidianVault)
 # OBSIDIAN_VAULT_PATH=/path/to/your/vault
+
+# For internal links (e.g., Sharepoint):
+INTERNAL_URL=https://internal-page-url
