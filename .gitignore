@@ -13,6 +13,8 @@
 .env.*
 .resources/
 .claude/
+column_map.py
+
 
 
 # --- Project-specific ignores ---
@@ -41,6 +43,6 @@ logs/
 # --- Exceptions ---
 # The .gitignore file itself should be version-controlled.
 !.gitignore
-# Keep directory placeholders
-!data/appcoll_exports/.gitkeep
-!vault_output/.gitkeep
+
+appcoll_exports/
+

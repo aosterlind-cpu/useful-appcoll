@@ -1,0 +1,5 @@
+APPCOLL_EMAIL=your_appcoll_username_or_email_here 
+APPCOLL_PASSWORD=your_appcoll_password_here
+
+# Optional: override vault output path (defaults to ~/Documents/ObsidianVault)
+# OBSIDIAN_VAULT_PATH=/path/to/your/vault

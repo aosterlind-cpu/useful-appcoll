@@ -5,7 +5,7 @@
 #   - id: <unique_string_id>          # Required. Used in logs and debugging.
 #     description: <human_readable>   # Optional.
 #     conditions:                     # ALL conditions must be true (logical AND).
-#       - field: <python_field_name>  # Field from the CSV field reference.
+#       - field: <python_field_name>  # Normalized column header mapped to readable python variable name. See README.md, section "Customizing Rules", "Note on Column Headers"
 #         op: <operator>              # One of: eq, ne, contains, matches, gt, lt,
 #                                     #   gte, lte, is_null, is_not_null, in, not_in
 #         value: <value>              # Comparison value (omit for is_null/is_not_null).
