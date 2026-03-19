@@ -23,7 +23,7 @@ the matter-level value is non-empty.
 """
 
 import logging
-import re
+
 from datetime import date, datetime
 from pathlib import Path
 
