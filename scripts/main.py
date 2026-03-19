@@ -14,7 +14,6 @@ Entry point. Orchestrates the full pipeline:
 """
 
 import logging
-import string
 import sys
 from datetime import date
 
@@ -62,13 +61,9 @@ def main() -> None:
     # 4. Sort: descending score, then document_number for tie-breaking
     entries.sort(key=lambda e: (-e["_priority_score"], e.get("document_number") or ""))
 
-    # 5. Assign priority letters (A-Z, then Z1, Z2, ... for overflow)
-    letter_pool = list(string.ascii_uppercase)
-    for i, entry in enumerate(entries):
-        if i < 26:
-            entry["_priority_letter"] = letter_pool[i]
-        else:
-            entry["_priority_letter"] = f"Z{i - 25}"
+    # 5. Assign priority numbers (1, 2, 3, ...)
+    for i, entry in enumerate(entries, start=1):
+        entry["_priority_number"] = i
 
     # 6. Generate tasks for entries meeting the threshold
     for entry in entries:

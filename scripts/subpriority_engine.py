@@ -31,13 +31,13 @@ def assign_subpriorities(entry: dict, today: date) -> None:
     if not tasks:
         return
 
-    letter: str = entry.get("_priority_letter", "?")
+    number = entry.get("_priority_number", 0)
     deadline: date | None = entry.get("_effective_deadline")
 
     if deadline is None:
         # No deadline: assign today as target for all tasks
         for i, task in enumerate(tasks, start=1):
-            task["subpriority"] = f"{letter}.{i}"
+            task["subpriority"] = f"{number}.{i}"
             task["target_date"] = today
             task["original_target_date"] = today
             task["is_overdue"] = False
@@ -51,7 +51,7 @@ def assign_subpriorities(entry: dict, today: date) -> None:
         if raw < today:
             task["is_overdue"] = True
             task["target_date"] = today
-            task["display_name"] = task["name"].upper()
+            task["display_name"] = task["name"]
         else:
             task["is_overdue"] = False
             task["target_date"] = raw
@@ -63,14 +63,14 @@ def assign_subpriorities(entry: dict, today: date) -> None:
     # We ensure each successive task's date is on or after the previous.
     #
     # Edge case: overdue tasks are all capped at today. If multiple tasks are
-    # overdue they all display as today in ALL CAPS — monotonic enforcement
-    # does NOT push overdue tasks past today (spec §7).
+    # overdue they all display as today — monotonic enforcement does NOT push
+    # overdue tasks past today.
     previous_date: date | None = None
     for task in tasks:
         if task["is_overdue"]:
             # Overdue tasks are always capped at today regardless of previous.
             task["target_date"] = today
-            task["display_name"] = task["name"].upper()
+            task["display_name"] = task["name"]
             previous_date = today
         else:
             if previous_date is not None and task["target_date"] <= previous_date:
@@ -79,7 +79,7 @@ def assign_subpriorities(entry: dict, today: date) -> None:
                 # Re-evaluate overdue status after adjustment
                 if task["target_date"] < today:
                     task["is_overdue"] = True
-                    task["display_name"] = task["name"].upper()
+                    task["display_name"] = task["name"]
                     task["target_date"] = today
                 else:
                     task["is_overdue"] = False
@@ -88,6 +88,6 @@ def assign_subpriorities(entry: dict, today: date) -> None:
 
     # --- Step 3: assign subpriority labels ---
     for i, task in enumerate(tasks, start=1):
-        task["subpriority"] = f"{letter}.{i}"
+        task["subpriority"] = f"{number}.{i}"
         # Initialise help_fields placeholder (populated by task_help_annotator)
         task.setdefault("help_fields", {})

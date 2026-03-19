@@ -19,9 +19,9 @@ def _make_tasks(*offset_days_list):
     return tasks
 
 
-def _make_entry(tasks, deadline=DEADLINE, letter="A"):
+def _make_entry(tasks, deadline=DEADLINE, number=1):
     return {
-        "_priority_letter": letter,
+        "_priority_number": number,
         "_effective_deadline": deadline,
         "_tasks": tasks,
     }
@@ -32,13 +32,13 @@ class TestSubpriorityLabels:
         entry = _make_entry(_make_tasks(20, 10, 5))
         assign_subpriorities(entry, TODAY)
         labels = [t["subpriority"] for t in entry["_tasks"]]
-        assert labels == ["A.1", "A.2", "A.3"]
+        assert labels == ["1.1", "1.2", "1.3"]
 
-    def test_labels_use_priority_letter(self):
-        entry = _make_entry(_make_tasks(10, 5), letter="C")
+    def test_labels_use_priority_number(self):
+        entry = _make_entry(_make_tasks(10, 5), number=3)
         assign_subpriorities(entry, TODAY)
         labels = [t["subpriority"] for t in entry["_tasks"]]
-        assert labels == ["C.1", "C.2"]
+        assert labels == ["3.1", "3.2"]
 
 
 class TestTargetDateComputation:
@@ -71,12 +71,12 @@ class TestOverdueTasks:
         assert task["is_overdue"] is True
         assert task["target_date"] == TODAY
 
-    def test_overdue_display_name_is_all_caps(self):
+    def test_overdue_display_name_unchanged(self):
         entry = _make_entry(_make_tasks(35))
         entry["_tasks"][0]["name"] = "Review the document"
         assign_subpriorities(entry, TODAY)
         task = entry["_tasks"][0]
-        assert task["display_name"] == "REVIEW THE DOCUMENT"
+        assert task["display_name"] == "Review the document"
 
     def test_original_target_date_preserved(self):
         entry = _make_entry(_make_tasks(35))
@@ -113,13 +113,13 @@ class TestMonotonicDateEnforcement:
         assert dates == sorted(dates)
 
     def test_all_overdue_all_capped_at_today(self):
-        """Multiple overdue tasks: all capped at today, all ALL CAPS."""
+        """Multiple overdue tasks: all capped at today, display_name unchanged."""
         # offsets 35, 32, 31 → all raw dates in Oct (< TODAY)
         entry = _make_entry(_make_tasks(35, 32, 31))
         assign_subpriorities(entry, TODAY)
         for task in entry["_tasks"]:
             assert task["is_overdue"] is True
-            assert task["display_name"] == task["name"].upper()
+            assert task["display_name"] == task["name"]
             assert task["target_date"] == TODAY
 
 
