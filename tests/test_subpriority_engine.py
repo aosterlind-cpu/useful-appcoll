@@ -4,7 +4,6 @@ Unit tests for scripts/subpriority_engine.py
 """
 
 from datetime import date, timedelta
-import pytest
 
 from scripts.subpriority_engine import assign_subpriorities
 

@@ -70,24 +70,23 @@ playwright install chromium # Install playwright (headless browser required for 
 
 ### II. Configure credentials
 
-  1. Copy `dot_env_template.txt` to `.env` and change file permissions.
+1. Copy `dot_env_template.txt` to `.env` and change file permissions.
 
 ```bash
 cp dot_env_template.txt .env  # Copy template to .env
 chmod 600 .env  # Change permissions on .env to read and write for owner only.
 ```
-  2.  Edit `.env` to include your AppColl credentials in the designated locations
-    - _NOTE: This is locally exposing your AppColl password as plain text. You should assume that anyone who is able to access your laptop will be able to view this file. Do not store this file remotely. If you share this project, you must first delete the `.env` file._
+2.  Edit `.env` to include your AppColl credentials in the designated locations
+
+  - _NOTE: Locally exposes AppColl password as plain text._
   
 
 ### III. Configure AppColl CSV Column Names
 
-- For corporate security and privacy, script requires configuration of the column headers available to the user through AppColl.
-- The column headers should be configured in `config/column_map.py` in a variable named `COLUMN_MAP`. 
-- The variable `COLUMN_MAP` should of type `dict[str, str]`:
-  - First `str` should be column header from AppColl CSV, normalized to use lower case and trim leading/trailing whitespaces. 
-  - Second `str` should be the python variable name. Recommend modifying the column header to be readable and informative for clarity and ease of use.
-    - To access an entry in the AppColl CSV while `config/rules.yaml` or `config/task_help.yaml`, configure a `field` with a value of the python variable name mapped in `COLUMN_MAP`.
+- Script requires configuration of the column headers available to the user through AppColl.
+- The column headers should be configured in `config/column_map.py` as variable `COLUMN_MAP`, type `dict[str, str]`. 
+  - `key`: AppColl CSV column header (normalized to lower case and remove whitespace). 
+  - `value`: Python variable name. Used for values in `field` of `config/rules.yaml` and `config/task_help.yaml`.
 
 ```bash
 # Code stub to create config/column_map.py from terminal. Use nano, vim, or text editor to add/edit/delete entries.
@@ -125,7 +124,7 @@ launchctl load ~/Library/LaunchAgents/com.useful_appcoll.docket.plist # Load pli
 
 The job runs every weekday at 9 AM local time. Output is appended to `logs/docket.log`.
 
-### V. (Optional) Running Manually
+### V. Manually Run
 
 ```bash
 # Run via launchctl (output goes to logs/docket.log)
@@ -147,7 +146,7 @@ bash run_docket.sh
 
 ### I. Allow PowerShell scripts to run
 
-By default, Windows blocks `.ps1` scripts. Run this once in PowerShell:
+Enable `.ps1` scripts (Windows defaults to block):
 
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
@@ -172,16 +171,15 @@ copy dot_env_template.txt .env
 ```
 
 2. Edit `.env` to include your AppColl credentials in the designated locations.
-   - _NOTE: This is locally exposing your AppColl password as plain text. You should assume that anyone who is able to access your machine will be able to view this file. Do not store this file remotely. If you share this project, you must first delete the `.env` file._
+
+  - _NOTE: Locally exposes AppColl password as plain text._
 
 ### IV. Configure AppColl CSV Column Names
 
-- Script requires configuration of the column headers available to the user through AppColl. 
-- The column headers should be configured in `config/column_map.py` in a variable named `COLUMN_MAP`. 
-- The variable `COLUMN_MAP` should of type `dict[str, str]`:
-  - First `str` should be column header from AppColl CSV, normalized to use lower case and trim leading/trailing whitespaces. 
-  - Second `str` should be the python variable name. Recommend modifying the column header to be readable and informative for clarity and ease of use.
-    - To access an entry in the AppColl CSV while `config/rules.yaml` or `config/task_help.yaml`, configure a `field` with a value of the python variable name mapped in `COLUMN_MAP`.
+- Script requires configuration of the column headers available to the user through AppColl.
+- The column headers should be configured in `config/column_map.py` as variable `COLUMN_MAP`, type `dict[str, str]`. 
+  - `key`: AppColl CSV column header (normalized to lower case and remove whitespace). 
+  - `value`: Python variable name. Used for values in `field` of `config/rules.yaml` and `config/task_help.yaml`.
 
 ```powershell
 # Code stub to create config/column_map.py from powershell. Use notepad or other text editor to add/edit/delete entries.
@@ -210,7 +208,7 @@ Other tunable constants in `config/globals.py`:
 
 ### VI. Register the Task Scheduler job
 
-Run these commands from the project directory in PowerShell:
+Run from project directory in PowerShell:
 
 ```powershell
 $ProjDir = (Resolve-Path .).Path
@@ -222,7 +220,7 @@ schtasks /create `
 
 The job runs every weekday at 9 AM local time. Output is appended to `logs\docket.log`.
 
-### VII. (Optional) Running Manually
+### VII. Manual Run
 
 ```powershell
 # Trigger via Task Scheduler (output goes to logs\docket.log)
@@ -231,47 +229,26 @@ schtasks /run /tn "useful_appcoll\docket"
 # Run the script directly (output to terminal — useful for debugging)
 .\run_docket.ps1
 ```
-
 ---
 
 ## Customizing Rules
 
-Rules are configured in `config/rules.yaml`. Each rule specifies conditions (field matches) and tasks (name + days-before-deadline). Edit this file to add/change/delete rules. Modifications are picked up at the next run. 
+- Rules are configurable/editable in `config/rules.yaml`. Each rule specifies conditions (field matches) and tasks (name + days-before-deadline). 
 
-See the comments at the top of `config/rules.yaml` for reference and add/edit/delete instructions.
+- _See `config/rules.yaml` comments for details_.
 
 ## Customizing Task Help Fields
 
-`config/task_help.yaml` maps each task's `help_key` to a list of AppColl fields shown inline with that task in the report.
-
-### _Note on Column Headers_
-
-Column headers from the CSV file are normalized and mapped to python variable names. The YAML files must refer to the python variable names. See section "Configure AppColl CSV Column Names" above.  
-
-**_Example_**
-To access the value for the column labeled "taskstatus" in the AppColl CSV file, use python variable name `task_status` in `field` of YAML file.  
-
-```python
-COLUMN_MAP: dict[str, str] = {
-    # --- Format "<csv column name>": "<python variable name>" ---
-    "taskstatus": "task_status",
-    "taskid": "task_id",
-    "refdate": "ref_date",
-}
-```
-
-#### Ofinno Column Information
-
-To request a complete list of all column headers in Ofinno's AppColl CSV, email `aosterlind@ofinno.com`. 
+- `config/task_help.yaml` maps each task's `help_key` to a list of AppColl fields shown inline with that task in the report.
 
 ---
 
-## Assumptions
+## AppColl Assumptions
 
-For each automated run, the below assumptions are relied upon. No error handling and recovery has been implemented to gracefully handle failure of any of these assumptions. 
+Script relies on the following assumptions about AppColl: 
 
-  1. The default view in AppColl is filtered to include only your matters
-  2. The default view in AppColl is configured to show all columns necessary to generate the output.
+  1. The default view in AppColl is filtered to include only matters owned by one person.
+  2. The default view in AppColl shows all columns referenced in `config/rules.yaml` and `config/task_help.yaml`.
 
 ---
 
