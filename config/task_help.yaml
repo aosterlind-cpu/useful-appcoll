@@ -4,20 +4,30 @@
 # task_help:
 #   <help_key>:
 #     label: <display_label>          # Section label shown in output. Optional.
-#     fields:                         # Ordered list of CSV field names to display.
+#     fields:                         # Ordered list of field names to display.
 #       - field: <python_field_name>
 #         label: <display_label>      # Label for this field in output.
+#         link_type: url | email      # Optional. Renders value as a Markdown link.
+#         link_text: <display text>   # Required when link_type is "url".
+#                                     # For link_type "email", the address is used
+#                                     # as both display text and mailto target.
 #
 # HOW TO ADD A NEW TASK HELP ENTRY:
 #   1. Add a new key under task_help:.
 #   2. Optionally set a label.
-#   3. List the fields (using Python field names from the CSV field reference)
-#      and their display labels.
+#   3. List the fields (using Python field names from the CSV field reference
+#      or extended fields below) and their display labels.
 #
 # HOW TO EDIT: Change field names or labels as needed.
 # HOW TO DELETE: Remove the entire key block.
 #
-# Fields with null/empty values in the CSV are silently omitted from output.
+# Fields with null/empty values are silently omitted from output.
+#
+# EXTENDED FIELDS (not from CSV — derived or fetched at runtime):
+#   email    — inventor email derived from responsible_inventor
+#              Format: <first initial><last name>@ofinno.com
+#   wpm_url  — link to the Weekly Prosecution Meeting schedule (fetched from SharePoint)
+#   fcr_url  — link to the Final Claims Review scheduling form (fetched from SharePoint)
 # ---------------------------------------------------------------------------
 
 task_help:
@@ -27,6 +37,14 @@ task_help:
     fields:
       - field: responsible_inventor
         label: "Responsible Inventor"
-      
-
-
+      - field: email
+        label: "Resp. Inv. Email"
+        link_type: email
+      - field: wpm_url
+        label: "WPM Schedule"
+        link_type: url
+        link_text: "Link to WPM schedule →"
+      - field: fcr_url
+        label: "FCR Request"
+        link_type: url
+        link_text: "Link to FCR form →"

@@ -151,6 +151,18 @@ def _build_column_rename_map(df_columns: list[str]) -> dict[str, str]:
     if unmapped:
         log.debug("%d columns not in COLUMN_MAP: %s", len(unmapped), unmapped)
 
+    # Detect collisions: multiple source columns mapping to the same target
+    from collections import defaultdict
+    target_to_sources: dict[str, list[str]] = defaultdict(list)
+    for src, tgt in rename.items():
+        target_to_sources[tgt].append(src)
+    for tgt, sources in target_to_sources.items():
+        if len(sources) > 1:
+            log.warning(
+                "Duplicate target column %r: source columns %s will collide after rename",
+                tgt, sources,
+            )
+
     return rename
 
 
@@ -233,6 +245,16 @@ def load_appcoll_csv(warnings: list[str] | None = None) -> tuple[list[dict], dic
         # Ensure client falls back to matter_client when empty
         if not entry.get("client"):
             entry["client"] = entry.get("matter_client")
+
+        # Derive inventor email from responsible_inventor
+        ri = entry.get("responsible_inventor")
+        if ri and str(ri).strip() not in ("", "nan", "None", "NaT"):
+            ri = str(ri).strip()
+            first = ri[0].lower()
+            last = ri.split()[-1].lower()
+            entry["email"] = f"{first}{last}@ofinno.com"
+        else:
+            entry["email"] = None
 
         entries.append(entry)
 

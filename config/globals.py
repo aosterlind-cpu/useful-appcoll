@@ -46,7 +46,7 @@ PRIORITY_SCORE_NO_DEADLINE: int = 0
 
 # Docket entries with a priority score >= this value will have tasks generated.
 # Set to 0 to generate tasks for ALL entries with any score.
-TASK_GENERATION_THRESHOLD: int = 30
+TASK_GENERATION_THRESHOLD: int = 80
 
 # ---------------------------------------------------------------------------
 # OUTPUT

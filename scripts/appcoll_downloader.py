@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 LOGIN_URL = "https://login.appcoll.com/"
 TASKS_URL = "https://login.appcoll.com/Tasks.aspx?islogin=1"
 DOWNLOAD_DIR = Path("data/appcoll_exports")
-SCREENSHOT_DIR = Path("debug_screenshots")
+SCREENSHOT_DIR = Path("debug")
 TIMEOUT_MS = 30_000  # 30 seconds per action
 
 # Selector lists — tried in order; first match wins.

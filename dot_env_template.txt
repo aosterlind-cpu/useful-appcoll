@@ -1,5 +1,10 @@
+# AppColl Credentials for CSV Export
 APPCOLL_EMAIL=your_appcoll_username_or_email_here 
 APPCOLL_PASSWORD=your_appcoll_password_here
+
+# Sharepoint Credentials for Internal Web Access
+SHAREPOINT_EMAIL=your_sharepoint_email_here
+SHAREPOINT_PASSWORD=your_sharepoint_password_here
 
 # Optional: override vault output path (defaults to ~/Documents/ObsidianVault)
 # OBSIDIAN_VAULT_PATH=/path/to/your/vault

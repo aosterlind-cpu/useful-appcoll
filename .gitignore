@@ -35,7 +35,7 @@ venv/
 env/
 
 # Debug screenshots from Playwright failures
-debug_screenshots/
+debug/
 
 # Local run logs
 logs/
@@ -45,4 +45,5 @@ logs/
 !.gitignore
 
 appcoll_exports/
+sharepoint_context.json
 

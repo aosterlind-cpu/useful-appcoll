@@ -23,6 +23,7 @@ from scripts.priority_scorer import compute_priority_score
 from scripts.task_generator import generate_tasks_for_entry
 from scripts.subpriority_engine import assign_subpriorities
 from scripts.task_help_annotator import annotate_task_help
+from scripts.url_fetcher import fetch_urls
 from scripts.output_formatter import build_markdown
 from scripts.vault_writer import write_to_vault
 
@@ -78,8 +79,10 @@ def main() -> None:
             assign_subpriorities(entry, today)
 
     # 8. Annotate tasks with contextual help fields
+    url_data = fetch_urls()
     for entry in entries:
         if entry["_tasks"]:
+            entry.update(url_data)
             annotate_task_help(entry)
 
     # 9. Build Markdown

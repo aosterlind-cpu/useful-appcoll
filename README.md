@@ -31,13 +31,14 @@ useful_appcoll/
 │   └── task_help.yaml          # Per-task contextual field mappings
 ├── scripts/
 │   ├── main.py                 # Entry point
-│   ├── appcoll_downloader.py   # Headless browser CSV downloader (Playwright)
+│   ├── appcoll_downloader.py   # Fetches AppColl CSV exports
 │   ├── csv_loader.py           # CSV ingestion and normalization
 │   ├── priority_scorer.py      # Priority scoring engine
 │   ├── task_generator.py       # Rule-based task generation
 │   ├── subpriority_engine.py   # Subpriority assignment and date adjustment
 │   ├── task_help_annotator.py  # Contextual help field injection
 │   ├── output_formatter.py     # Markdown output builder
+│   ├── url_fetcher.py          # Fetches URLs from Sharepoint sites
 │   └── vault_writer.py         # Writes Markdown to Obsidian Vault
 ├── tests/
 │   └── test_xxx_xxx.py, etc.   # Python tests    
@@ -84,7 +85,7 @@ chmod 600 .env  # Change permissions on .env to read and write for owner only.
 ### III. Configure AppColl CSV Column Names
 
 - Script requires configuration of the column headers available to the user through AppColl.
-- The column headers should be configured in `config/column_map.py` as variable `COLUMN_MAP`, type `dict[str, str]`. 
+- Configure column headers in `config/column_map.py` as variable `COLUMN_MAP`, type `dict[str, str]`. 
   - `key`: AppColl CSV column header (normalized to lower case and remove whitespace). 
   - `value`: Python variable name. Used for values in `field` of `config/rules.yaml` and `config/task_help.yaml`.
 
@@ -97,8 +98,6 @@ echo "COLUMN_MAP: dict[str, str] = {
 \n }" > config/column_map.py
 ```
 
-- **Ofinno**: Email `aosterlind@ofinno.com` for comprehensive `column_map.py`
-
 ### IV. Configure output path (optional)
 
 Optional: Edit `config/globals.py` or add to `.env`:
@@ -108,13 +107,14 @@ OBSIDIAN_VAULT_PATH=/path/to/your/vault
 ```
 
 Other tunable constants in `config/globals.py`:
-- `TASK_GENERATION_THRESHOLD` — minimum score to generate tasks (default: 30)
+- `TASK_GENERATION_THRESHOLD` — minimum score to generate tasks (default: 75)
 - `OBSIDIAN_DOCKET_SUBFOLDER` — subfolder within the vault (default: `Docket/Daily`)
 
 ### V. Register the launchd job
 
 - Uses `launchd` for automatted script runs
-- Requires `com.useful_appcoll.docket.plist` configured with path to `run_docket.sh` and `logs/` 
+- Requires `com.useful_appcoll.docket.plist` configured with path to `run_docket.sh` and `logs/`.
+  - `logger` file from each run is appended to `logs/docket.log`. 
 
 ```bash
 chmod +x run_docket.sh  # Make script executable
@@ -122,7 +122,7 @@ cp com.useful_appcoll.docket.plist ~/Library/LaunchAgents/com.useful_appcoll.doc
 launchctl load ~/Library/LaunchAgents/com.useful_appcoll.docket.plist # Load plist
 ```
 
-The job runs every weekday at 9 AM local time. Output is appended to `logs/docket.log`.
+_Default run: weekdays at 9 AM (local)._ 
 
 ### V. Manually Run
 
@@ -130,7 +130,7 @@ The job runs every weekday at 9 AM local time. Output is appended to `logs/docke
 # Run via launchctl (output goes to logs/docket.log)
 launchctl start com.useful_appcoll.docket
 
-# Run the script directly (output to terminal — useful for debugging)
+# Run the script directly (output to terminal)
 bash run_docket.sh
 ```
 
@@ -142,11 +142,11 @@ bash run_docket.sh
 
 - Python 3.13+ (from [python.org](https://python.org); check **"Add Python to PATH"** during install)
 - PowerShell 5.1+
-- An Obsidian Vault (configure via `OBSIDIAN_VAULT_PATH` if not at the default `%USERPROFILE%\Documents\ObsidianVault`)
+- Obsidian Vault (configure via `OBSIDIAN_VAULT_PATH` if not at the default `%USERPROFILE%\Documents\ObsidianVault`)
 
 ### I. Allow PowerShell scripts to run
 
-Enable `.ps1` scripts (Windows defaults to block):
+Enable `.ps1` scripts (Windows blocks by default):
 
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
@@ -177,7 +177,7 @@ copy dot_env_template.txt .env
 ### IV. Configure AppColl CSV Column Names
 
 - Script requires configuration of the column headers available to the user through AppColl.
-- The column headers should be configured in `config/column_map.py` as variable `COLUMN_MAP`, type `dict[str, str]`. 
+- Configure column headers in `config/column_map.py` as variable `COLUMN_MAP`, type `dict[str, str]`. 
   - `key`: AppColl CSV column header (normalized to lower case and remove whitespace). 
   - `value`: Python variable name. Used for values in `field` of `config/rules.yaml` and `config/task_help.yaml`.
 
@@ -192,8 +192,6 @@ COLUMN_MAP: dict[str, str] = {
 "@ | Out-File -FilePath config\column_map.py -Encoding utf8
 ```
 
-- **Ofinno**: Email `aosterlind@ofinno.com` for comprehensive `column_map.py`
-
 ### V. Configure output path (optional)
 
 Optional: Edit `config/globals.py` or add to `.env`:
@@ -203,7 +201,7 @@ OBSIDIAN_VAULT_PATH=C:\Users\your_username\Documents\ObsidianVault
 ```
 
 Other tunable constants in `config/globals.py`:
-- `TASK_GENERATION_THRESHOLD` — minimum score to generate tasks (default: 30)
+- `TASK_GENERATION_THRESHOLD` — minimum score to generate tasks (default: 75)
 - `OBSIDIAN_DOCKET_SUBFOLDER` — subfolder within the vault (default: `Docket/Daily`)
 
 ### VI. Register the Task Scheduler job
@@ -226,7 +224,7 @@ The job runs every weekday at 9 AM local time. Output is appended to `logs\docke
 # Trigger via Task Scheduler (output goes to logs\docket.log)
 schtasks /run /tn "useful_appcoll\docket"
 
-# Run the script directly (output to terminal — useful for debugging)
+# Run the script directly (output to terminal)
 .\run_docket.ps1
 ```
 ---
@@ -239,7 +237,8 @@ schtasks /run /tn "useful_appcoll\docket"
 
 ## Customizing Task Help Fields
 
-- `config/task_help.yaml` maps each task's `help_key` to a list of AppColl fields shown inline with that task in the report.
+- Set additional info displayed inline below a task in `config/task_help.yaml` 
+  - Maps each task's `help_key` to a list of AppColl fields shown inline with that task in the report.
 
 ---
 
