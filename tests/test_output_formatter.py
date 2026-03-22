@@ -20,7 +20,7 @@ CSV_META = {
 def _base_entry(**overrides):
     entry = {
         "matter": "22-TEST-US",
-        "entry_type": "Respond to Non-Final Office Action - 3 Month Deadline",
+        "task_type": "Respond to Non-Final Office Action - 3 Month Deadline",
         "application_number": "17/999,999",
         "country": "US",
         "country_full": "United States",

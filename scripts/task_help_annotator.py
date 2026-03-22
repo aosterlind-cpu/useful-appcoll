@@ -10,6 +10,7 @@ Fields with null/empty values are silently omitted.
 """
 
 import logging
+import re
 from pathlib import Path
 
 import yaml
@@ -45,7 +46,7 @@ def annotate_task_help(entry: dict) -> None:
             continue
 
         help_def = _TASK_HELP[help_key]
-        task["help_label"] = help_def.get("label", "")
+        task["help_label"] = help_def.get("label", "") or ""
         fields_def: list[dict] = help_def.get("fields", [])
 
         help_fields: dict[str, str] = {}
@@ -53,7 +54,7 @@ def annotate_task_help(entry: dict) -> None:
             py_field = field_def["field"]
             label = field_def["label"]
             value = entry.get(py_field)
-            if value is None or str(value).strip() in ("", "nan", "None", "NaT"):
+            if value is None or str(value).strip().lower() in ("", "nan", "None", "na"):
                 continue
             raw = str(value).strip()
             link_type = field_def.get("link_type")
@@ -62,6 +63,9 @@ def annotate_task_help(entry: dict) -> None:
                 formatted = f"[{link_text}]({raw})"
             elif link_type == "email":
                 formatted = f"[{raw}](mailto:{raw})"
+            elif py_field == "connections":
+                matches = re.findall(r'\d{2}-\d{4}[A-Za-z]+', raw)
+                formatted = "; ".join(matches) if matches else raw
             else:
                 formatted = raw
             help_fields[label] = formatted

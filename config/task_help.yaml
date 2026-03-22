@@ -1,5 +1,5 @@
 # config/task_help.yaml
-#
+
 # SCHEMA:
 # task_help:
 #   <help_key>:
@@ -11,18 +11,18 @@
 #         link_text: <display text>   # Required when link_type is "url".
 #                                     # For link_type "email", the address is used
 #                                     # as both display text and mailto target.
-#
+
 # HOW TO ADD A NEW TASK HELP ENTRY:
 #   1. Add a new key under task_help:.
 #   2. Optionally set a label.
 #   3. List the fields (using Python field names from the CSV field reference
 #      or extended fields below) and their display labels.
-#
+
 # HOW TO EDIT: Change field names or labels as needed.
 # HOW TO DELETE: Remove the entire key block.
-#
+
 # Fields with null/empty values are silently omitted from output.
-#
+
 # EXTENDED FIELDS (not from CSV — derived or fetched at runtime):
 #   email    — inventor email derived from responsible_inventor
 #              Format: <first initial><last name>@ofinno.com
@@ -32,19 +32,90 @@
 
 task_help:
 
+  us_oa_sep_review:
+    label: "OA Strategy Info"
+    fields: 
+      - field: connections
+        label: "Counterparts"
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
+
   us_oa_sep_review_inventor_meeting:
-    label: "SEP OA - Inventor Meeting Info"
+    label: "Inventor Meeting Info"
     fields:
       - field: responsible_inventor
         label: "Responsible Inventor"
       - field: email
         label: "Resp. Inv. Email"
         link_type: email
+
+
+  pct_national_phase_filing_finalize:
+    label: "Inventor Meeting Info"
+    fields:
+      - field: responsible_inventor
+        label: "Responsible Inventor"
+      - field: email
+        label: "Resp. Inv. Email"
+        link_type: email  
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
+
+  us_oa_sep_wpm:
+    label: "WPM Review Info"
+    fields:
+      - field: connections
+        label: "Counterparts" 
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
       - field: wpm_url
         label: "WPM Schedule"
         link_type: url
-        link_text: "Link to WPM schedule →"
+        link_text: "WPM schedule on Dropbox"
+  
+  prov_invention_disclosure:
+    label: "Responsible Inventor Info"
+    fields:
+      - field: responsible_inventor
+        label: "Responsible Inventor"
+      - field: email
+        label: "Resp. Inv. Email"
+        link_type: email
+  
+  prov_inventor_claims_review:
+    label: "Inventor Claims Review Info"
+    fields:
+      - field: responsible_inventor
+        label: "Responsible Inventor"
+      - field: email
+        label: "Resp. Inv. Email"
+        link_type: email
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
+
+  prof_fcr_meeting:
+    label: "FCR Meeting Info"
+    fields:
+      - field: responsible_inventor
+        label: "Responsible Inventor"
+      - field: email
+        label: "Resp. Inv. Email"
+        link_type: email
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
       - field: fcr_url
         label: "FCR Request"
         link_type: url
-        link_text: "Link to FCR form →"
+        link_text: "FCR request on Office Forms"
+  
+

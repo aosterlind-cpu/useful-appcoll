@@ -13,7 +13,6 @@
 .env.*
 .resources/
 .claude/
-column_map.py
 
 
 
@@ -38,7 +37,7 @@ env/
 debug/
 
 # Local run logs
-logs/
+*.log
 
 # --- Exceptions ---
 # The .gitignore file itself should be version-controlled.

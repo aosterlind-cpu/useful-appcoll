@@ -11,7 +11,7 @@ def _us_nonfinal_entry(**overrides):
     base = {
         "task_status": "Open",
         "country": "US",
-        "entry_type": "Respond to Non-Final Office Action - 3 Month Deadline",
+        "task_type": "Respond to Non-Final Office Action - 3 Month Deadline",
         "sep_status": None,
         "tier": None,
     }
@@ -23,7 +23,7 @@ def _us_final_entry(**overrides):
     base = {
         "task_status": "Open",
         "country": "US",
-        "entry_type": "Respond to Final Office Action - 4 Month Deadline",
+        "task_type": "Respond to Final Office Action - 4 Month Deadline",
         "sep_status": None,
         "tier": None,
     }
@@ -35,7 +35,7 @@ def _ep_oa_entry(**overrides):
     base = {
         "task_status": "Open",
         "country": "EP",
-        "entry_type": "Foreign: EP - Respond to Office Action",
+        "task_type": "Foreign: EP - Respond to Office Action",
         "sep_status": None,
         "tier": None,
     }
@@ -47,7 +47,7 @@ def _sep_entry(**overrides):
     base = {
         "task_status": "Open",
         "country": "US",
-        "entry_type": "Respond to Non-Final Office Action - 3 Month Deadline",
+        "task_type": "Respond to Non-Final Office Action - 3 Month Deadline",
         "sep_status": "5G NR",
         "tier": None,
     }
@@ -98,7 +98,7 @@ class TestUsFinalRule:
         assert any("FILE RCE" in n for n in names)
 
     def test_notice_of_appeal_matches(self):
-        entry = _us_final_entry(entry_type="File Notice of Appeal - 4 Month Deadline")
+        entry = _us_final_entry(task_type="File Notice of Appeal - 4 Month Deadline")
         tasks = generate_tasks_for_entry(entry)
         assert len(tasks) > 0
 
@@ -165,7 +165,7 @@ class TestNoMatchEntry:
         entry = {
             "task_status": "Open",
             "country": "US",
-            "entry_type": "Some Unknown Task Type XYZ",
+            "task_type": "Some Unknown Task Type XYZ",
             "sep_status": None,
             "tier": None,
         }

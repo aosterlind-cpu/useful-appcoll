@@ -40,13 +40,22 @@ PRIORITY_SCORE_OVERDUE: int = 100
 # Score assigned when no deadline date is available (respond_by is null)
 PRIORITY_SCORE_NO_DEADLINE: int = 0
 
+# Score adjustment applied when deadline is not hard but is extendible 
+PRIORITY_SCORE_EXTENDIBLE: int = -15
+
+# Score adjustment applied when deadline is not extendible 
+PRIORITY_SCORE_NON_EXTENDIBLE: int = 15
+
+# Score Threshold for being included in docket output. Only entries with score >= this value will be included. 
+PRIORITY_SCORE_THRESHOLD: int = 70
+
 # ---------------------------------------------------------------------------
 # TASK GENERATION THRESHOLD
 # ---------------------------------------------------------------------------
 
 # Docket entries with a priority score >= this value will have tasks generated.
 # Set to 0 to generate tasks for ALL entries with any score.
-TASK_GENERATION_THRESHOLD: int = 80
+TASK_GENERATION_THRESHOLD: int = 70
 
 # ---------------------------------------------------------------------------
 # OUTPUT

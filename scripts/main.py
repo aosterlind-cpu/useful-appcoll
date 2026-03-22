@@ -17,7 +17,7 @@ import logging
 import sys
 from datetime import date
 
-from config.globals import TASK_GENERATION_THRESHOLD, OPEN_ENTRIES_ONLY
+from config.globals import TASK_GENERATION_THRESHOLD, OPEN_ENTRIES_ONLY, PRIORITY_SCORE_THRESHOLD
 from scripts.csv_loader import load_appcoll_csv
 from scripts.priority_scorer import compute_priority_score
 from scripts.task_generator import generate_tasks_for_entry
@@ -54,39 +54,44 @@ def main() -> None:
         log.info("%d open entries after filtering", len(entries))
 
     # 3. Score entries
+    priority_entries = []
     for entry in entries:
         score, deadline = compute_priority_score(entry, today)
-        entry["_priority_score"] = score
-        entry["_effective_deadline"] = deadline
+        if score >= PRIORITY_SCORE_THRESHOLD:
+            entry["_priority_score"] = score
+            entry["_effective_deadline"] = deadline
+            priority_entries.append(entry)
+        else:
+            continue
 
     # 4. Sort: descending score, then document_number for tie-breaking
-    entries.sort(key=lambda e: (-e["_priority_score"], e.get("document_number") or ""))
+    priority_entries.sort(key=lambda e: (-e["_priority_score"], e.get("document_number") or ""))
 
     # 5. Assign priority numbers (1, 2, 3, ...)
-    for i, entry in enumerate(entries, start=1):
+    for i, entry in enumerate(priority_entries, start=1):
         entry["_priority_number"] = i
 
     # 6. Generate tasks for entries meeting the threshold
-    for entry in entries:
+    for entry in priority_entries:
         if entry["_priority_score"] >= TASK_GENERATION_THRESHOLD:
             entry["_tasks"] = generate_tasks_for_entry(entry)
         else:
             entry["_tasks"] = []
 
     # 7. Assign subpriorities and compute/adjust task dates
-    for entry in entries:
+    for entry in priority_entries:
         if entry["_tasks"]:
             assign_subpriorities(entry, today)
 
     # 8. Annotate tasks with contextual help fields
     url_data = fetch_urls()
-    for entry in entries:
+    for entry in priority_entries:
         if entry["_tasks"]:
             entry.update(url_data)
             annotate_task_help(entry)
 
     # 9. Build Markdown
-    markdown_content = build_markdown(entries, today, csv_meta, warnings=warnings)
+    markdown_content = build_markdown(priority_entries, today, csv_meta, warnings=warnings)
 
     # 10. Write to Obsidian Vault
     output_path = write_to_vault(markdown_content, today)

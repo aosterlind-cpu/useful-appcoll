@@ -25,12 +25,12 @@ def _fmt_date(d) -> str:
 
 def _days_remaining_str(deadline: date | None, today: date) -> str:
     if deadline is None:
-        return "no deadline"
+        return ""
     delta = (deadline - today).days
     if delta < 0:
-        return f"{abs(delta)} days overdue"
+        return f"**Overdue** by {abs(delta)} days"
     if delta == 0:
-        return "due today"
+        return "**Due today**"
     return f"{delta} day{'s' if delta != 1 else ''} remaining"
 
 
@@ -88,7 +88,7 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
         for e in deadline_rows:
             lines.append(
                 f"| {e.get('matter', 'N/A')} "
-                f"| {e.get('entry_type', 'N/A')} "
+                f"| {e.get('task_type', 'N/A')} "
                 f"| {e.get('application_number', 'N/A')} "
                 f"| {e.get('country', e.get('country_full', 'N/A'))} "
                 f"| {_fmt_date(e.get('_effective_deadline'))} |"
@@ -110,7 +110,7 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
         for e, t in task_rows:
             lines.append(
                 f"| {e.get('matter', 'N/A')} "
-                f"| {e.get('entry_type', 'N/A')} "
+                f"| {e.get('task_type', 'N/A')} "
                 f"| {t['display_name']} "
                 f"| {t['subpriority']} |"
             )
@@ -140,11 +140,11 @@ def _build_task_block(task: dict, today: date) -> str:
     lines.append(due_line)
 
     # Help fields
-    help_label = task.get("help_label", "")
+    help_label = task.get("help_label", "") or ""
     help_fields: dict = task.get("help_fields", {})
     if help_fields:
         lines.append("")
-        if help_label:
+        if help_label and help_label.strip() != "":
             lines.append(f"  > **{help_label}**  ")
         for label, value in help_fields.items():
             lines.append(f"  > - **{label}:** {value}  ")
@@ -164,46 +164,106 @@ def _build_entry_block(entry: dict, today: date) -> str:
     header_flag = _entry_header_flag(entry, today)
 
     lines: list[str] = []
+
+    header_parts = []
+    if not matter or str(matter).strip() == "":
+        matter = "*none*"
+    header_parts.append(f"{matter}")
+    entry_type = entry.get("task_type", "") or ""
+    if not entry_type or str(entry_type).strip() == "":
+        entry_type = "*none*"
+    header_parts.append(f"{entry_type}")
+
+    lines.append(f"\n### [{number}] {' \u00b7 '.join(header_parts)}{header_flag}")
+
     lines.append(f"\n### [{number}] {matter}{header_flag}")
 
     # Entry metadata
-    lines.append(f"**Type:** {entry.get('entry_type', 'N/A')}  ")
-    app_num = entry.get("application_number", "")
-    if app_num:
-        lines.append(f"**Application:** {app_num}  ")
-    country = entry.get("country") or entry.get("country_full", "")
-    if country:
-        lines.append(f"**Country:** {country}  ")
-    lines.append(f"**Due Date:** {_fmt_date(deadline)} *({days_str})*  ")
-    final_due = entry.get("final_due")
-    if final_due:
-        lines.append(f"**Final Due Date:** {_fmt_date(final_due)}  ")
-    title = entry.get("title", "")
+    lines.append(f"**Type:** {entry.get('task_type', '*none*')}  ")
+
+    app_parts = []
+
+    title = entry.get("title", "") or ""
     if title:
         lines.append(f"**Title:** {title}  ")
-    tier = entry.get("tier", "")
-    if tier:
-        lines.append(f"**Tier:** {tier}  ")
+
+    app_num = entry.get("application_number", "") or ""
+    if not app_num or str(app_num).strip() == "":
+        app_num = "*none*"
+    app_parts.append(f"**Appn #:** {app_num}")
+    pub_number = entry.get("publication_number", "") or ""
+    if not pub_number or str(pub_number).strip() == "":
+        pub_number = "*none*"
+    app_parts.append(f"**Pub #:** {pub_number}  ")
+
+    lines.append("  \0904  ".join(app_parts) + "  ")
 
     # SEP Status, PStrat, Avanci on one line
+    parts = []
+    
     sep = entry.get("sep_status") or ""
-    if isinstance(sep, str):
+    if sep and isinstance(sep, str) and sep.strip() != "":
         sep = sep.strip()
+    else:
+        sep = "_none_"
+    parts.append(f"**SEP Status:** {sep}")
+    
     psa = entry.get("psa") or ""
-    if isinstance(psa, str):
+    if psa and isinstance(psa, str) and psa.strip() != "":
         psa = psa.strip()
+    else:
+        psa = "_none_"
+    parts.append(f"**PStrat:** {psa}")
+
     avanci = entry.get("avanci_status") or ""
-    if isinstance(avanci, str):
+    if avanci and isinstance(avanci, str) and avanci.strip() != "":
         avanci = avanci.strip()
-    if sep or psa or avanci:
-        parts = []
-        if sep and sep != "":
-            parts.append(f"**SEP Status:** {sep}")
-        if psa and psa != "":
-            parts.append(f"**PStrat:** {psa}")
-        if avanci and avanci != "":
-            parts.append(f"**Avanci:** {avanci}")
-        lines.append("  \u00b7  ".join(parts) + "  ")
+    else:
+        avanci = "_none_"
+    parts.append(f"**Avanci:** {avanci}")
+
+    lines.append("  \u00b7  ".join(parts) + "  ")
+
+    lines.append("  \0904  ")
+
+    due_parts = []
+    due_parts.append(f"**Due (next/final):** *{_fmt_date(deadline)}*")
+    final_due = entry.get("final_due", "") or ""
+    if final_due and final_due.strip() != "":
+        due_parts.append(f" *{_fmt_date(final_due)}*  ")
+    lines.append("  \u00b7  ".join(due_parts) + "  ")
+    lines.append(f"**Days Before Due:** {days_str}  ")
+
+    next_steps = []
+
+    next_external = entry.get("next_external_task", "") or ""
+    next_internal = entry.get("next_internal_task", "") or ""
+
+
+    if (next_external and str(next_external).strip() != "") or (next_internal and str(next_internal).strip() != ""):
+        lines.append("  \0904  ")
+    
+    if next_external and str(next_external).strip() != "":
+        truncated = next_external.strip()[:100] + ("..." if len(next_external.strip()) > 100 else "")
+        lines.append(f"**External Next:** {truncated}  ")
+
+    if next_internal and str(next_internal).strip() != "":
+        truncated = next_internal.strip()[:100] + ("..." if len(next_internal.strip()) > 100 else "")
+        lines.append(f"**Internal Next:** {truncated}  ")
+
+    notes = entry.get("notes", "") or ""
+    comments = entry.get("comments", "") or ""
+
+    if (notes and str(notes).strip() != "") or (comments and str(comments).strip() != ""):
+        lines.append("  \0904  ")
+
+    if notes and str(notes).strip() != "":
+        truncated = notes.strip()[:100] + ("..." if len(notes.strip()) > 100 else "")
+        lines.append(f"**Notes:** {truncated}  ")
+
+    if comments and str(comments).strip() != "":
+        truncated = comments.strip()[:100] + ("..." if len(comments.strip()) > 100 else "")
+        lines.append(f"**Comments:** {truncated}  ")
 
     tasks: list[dict] = entry.get("_tasks", [])
     if tasks:
@@ -254,7 +314,7 @@ def _build_monitored_section(entries: list[dict], today: date) -> str:
             country = e.get("country") or e.get("country_full", "N/A")
             lines.append(
                 f"| {e.get('matter', 'N/A')} "
-                f"| {e.get('entry_type', 'N/A')} "
+                f"| {e.get('task_type', 'N/A')} "
                 f"| {e.get('application_number', 'N/A')} "
                 f"| {country} "
                 f"| {_fmt_date(deadline)} "

@@ -66,7 +66,7 @@ def _normalize_key(raw: str) -> str:
 
 def _parse_date(raw: str) -> date | None:
     """Try each DATE_PARSE_FORMATS; return a date or None on failure."""
-    if not raw or str(raw).strip() in ("", "nan", "NaT", "None"):
+    if not raw or str(raw).strip().lower() in ("", "none", "na"):
         return None
     s = str(raw).strip()
     # dateutil can handle many formats; try explicit formats first
@@ -85,7 +85,7 @@ def _parse_date(raw: str) -> date | None:
 
 def _parse_numeric(raw) -> float | None:
     """Parse a numeric value, handling commas and empty strings."""
-    if raw is None or str(raw).strip() in ("", "nan", "None"):
+    if raw is None or str(raw).strip().lower() in ("", "nan", "none", "na"):
         return None
     try:
         return float(str(raw).replace(",", "").strip())
@@ -97,8 +97,8 @@ def _clean_str(raw) -> str | None:
     """Return stripped string or None if empty/NaN."""
     if raw is None:
         return None
-    s = str(raw).strip()
-    return s if s not in ("", "nan", "None", "NaT") else None
+    s = str(raw).strip().lower()
+    return s if s not in ("", "nan", "none", "na") else None
 
 
 def _find_csv(warnings: list[str]) -> Path:
@@ -226,7 +226,7 @@ def load_appcoll_csv(warnings: list[str] | None = None) -> tuple[list[dict], dic
 
             if py_field in DATE_FIELDS:
                 parsed = _parse_date(raw_val)
-                if raw_val and str(raw_val).strip() not in ("", "nan", "None", "NaT") and parsed is None:
+                if raw_val and str(raw_val).strip().lower() not in ("", "nan", "none", "na") and parsed is None:
                     date_warn_fields.append(py_field)
                     warnings.append(
                         f"Could not parse date value {raw_val!r} for field {py_field!r}"
@@ -248,7 +248,7 @@ def load_appcoll_csv(warnings: list[str] | None = None) -> tuple[list[dict], dic
 
         # Derive inventor email from responsible_inventor
         ri = entry.get("responsible_inventor")
-        if ri and str(ri).strip() not in ("", "nan", "None", "NaT"):
+        if ri and str(ri).strip().lower() not in ("", "nan", "none", "na"):
             ri = str(ri).strip()
             first = ri[0].lower()
             last = ri.split()[-1].lower()

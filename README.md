@@ -1,11 +1,30 @@
 # Useful Appcoll -- Automated Script 
 
-Local executable that makes AppColl useful without requiring an API. 
-Configured to output in Markdown format adapted to Obsidian.
+>Local executable that makes AppColl useful without requiring an API. 
+>Configured to output in Markdown format adapted to Obsidian.
 
 ---
 
-## Steps
+## Sections 
+
+1.  [Script Overview](#1-script-overview)
+2.  [Repository Structure](#2-repository-structure)
+3.  [Installation and Setup](#3-installation-and-setup)
+    1.  [Prerequisites](#31-prerequisites)
+    2.  [Configure virtual environment](#32-configure-virtual-environment)
+    3.  [Configure environment Variables](#33-configure-environment-variables)
+    4.  [Configure global Variables](#34-configure-global-variables)
+    5.  [Register automation Job](#35-register-automation-job)
+4.  [Manual Run](#4-manual-run)
+5.  [Customization](#5-customization)
+    1.  [Overview](#51-overview)
+    2.  [Rules](#52-rules)
+    3.  [Tasks](#53-tasks)
+6.  [Header Map](#6-header-map)
+
+---
+
+## 1. Script Overview
 
 1. Automated job runs (`run_docket.sh` for macOS, `run_docket.ps1` for Windows) at configured day/time.
 2. Script logs into AppColl via headless browser, exports CSV to `data/appcoll_exports/`.
@@ -16,7 +35,7 @@ Configured to output in Markdown format adapted to Obsidian.
 
 ---
 
-## Repository Structure
+## 2. Repository Structure
 
 ```
 useful_appcoll/
@@ -26,7 +45,7 @@ useful_appcoll/
 ├── run_docket.ps1              # PowerShell entry point (Windows)
 ├── config/
 │   ├── globals.py              # All tunable constants (scores, thresholds, paths)
-│   ├── column_map.py           # CSV Column Mapping (see section "Configure AppColl CSV Column Names")
+│   ├── column_map.py           # CSV Column Mapping (see "III. Configure CSV Fields") 
 │   ├── rules.yaml              # Rule-based task generator rules
 │   └── task_help.yaml          # Per-task contextual field mappings
 ├── scripts/
@@ -51,108 +70,35 @@ useful_appcoll/
 
 ---
 
-## Setup (macOS 26+)
+## 3. Setup and Configuration
 
-### Prerequisites
+### 3.1 Prerequisites
 
-- Python 3.13+ (pyenv recommended: `pyenv install 3.13.12`)
-- An Obsidian Vault at `~/Documents/ObsidianVault` (or configure via `OBSIDIAN_VAULT_PATH`)
-- Full Disk Access permissions are granted to `bin/bash` and `Terminal` (Settings -> Privacy & Security -> Full Disk Access).
+- Python 3.13+ 
+- Markdown Reader (Obsidian)
+- **macOS**: 
+  - Full Disk Access enabled for `bin/bash` and `Terminal` (Settings -> Privacy & Security -> Full Disk Access).
+- **Windows**:
+  - Enable `.ps1` scripts in Powershell:
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
 
-### I. Create virtual environment and install dependencies
+### 3.2 Configure virtual environment
 
+> Script runs in a python virtual environment.
+> Virtual environment requires dependency installation.
+
+- **macOS**: 
 ```bash
 cd path/to/useful_appcoll # Navigate to project directory
-python3.13 -m venv .venv # Create virtual environment for python
+python3 -m venv .venv # Create virtual environment for python
 source .venv/bin/activate # Activate virtual environment
 pip install -r requirements.txt # Install dependencies
 playwright install chromium # Install playwright (headless browser required for AppColl access)
 ```
 
-### II. Configure credentials
-
-1. Copy `dot_env_template.txt` to `.env` and change file permissions.
-
-```bash
-cp dot_env_template.txt .env  # Copy template to .env
-chmod 600 .env  # Change permissions on .env to read and write for owner only.
-```
-2.  Edit `.env` to include your AppColl credentials in the designated locations
-
-  - _NOTE: Locally exposes AppColl password as plain text._
-  
-
-### III. Configure AppColl CSV Column Names
-
-- Script requires configuration of the column headers available to the user through AppColl.
-- Configure column headers in `config/column_map.py` as variable `COLUMN_MAP`, type `dict[str, str]`. 
-  - `key`: AppColl CSV column header (normalized to lower case and remove whitespace). 
-  - `value`: Python variable name. Used for values in `field` of `config/rules.yaml` and `config/task_help.yaml`.
-
-```bash
-# Code stub to create config/column_map.py from terminal. Use nano, vim, or text editor to add/edit/delete entries.
-echo "COLUMN_MAP: dict[str, str] = { 
-\n # --- Format each entry as comma-separated list, e.g., \"<csv column name>\": \"<python variable name>\",  ---
-\n # --- Example below maps column \"matternum\" to python variable \"matter_number\" ---
-\n \"matternum\": \"matter_number\",
-\n }" > config/column_map.py
-```
-
-### IV. Configure output path (optional)
-
-Optional: Edit `config/globals.py` or add to `.env`:
-
-```bash
-OBSIDIAN_VAULT_PATH=/path/to/your/vault
-```
-
-Other tunable constants in `config/globals.py`:
-- `TASK_GENERATION_THRESHOLD` — minimum score to generate tasks (default: 75)
-- `OBSIDIAN_DOCKET_SUBFOLDER` — subfolder within the vault (default: `Docket/Daily`)
-
-### V. Register the launchd job
-
-- Uses `launchd` for automatted script runs
-- Requires `com.useful_appcoll.docket.plist` configured with path to `run_docket.sh` and `logs/`.
-  - `logger` file from each run is appended to `logs/docket.log`. 
-
-```bash
-chmod +x run_docket.sh  # Make script executable
-cp com.useful_appcoll.docket.plist ~/Library/LaunchAgents/com.useful_appcoll.docket.plist # Copy plist to launchd
-launchctl load ~/Library/LaunchAgents/com.useful_appcoll.docket.plist # Load plist
-```
-
-_Default run: weekdays at 9 AM (local)._ 
-
-### V. Manually Run
-
-```bash
-# Run via launchctl (output goes to logs/docket.log)
-launchctl start com.useful_appcoll.docket
-
-# Run the script directly (output to terminal)
-bash run_docket.sh
-```
-
----
-
-## Setup (Windows 10+)
-
-### Prerequisites
-
-- Python 3.13+ (from [python.org](https://python.org); check **"Add Python to PATH"** during install)
-- PowerShell 5.1+
-- Obsidian Vault (configure via `OBSIDIAN_VAULT_PATH` if not at the default `%USERPROFILE%\Documents\ObsidianVault`)
-
-### I. Allow PowerShell scripts to run
-
-Enable `.ps1` scripts (Windows blocks by default):
-
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-```
-
-### II. Create virtual environment and install dependencies
+- **Windows**:
 
 ```powershell
 cd path\to\useful_appcoll          # Navigate to project directory
@@ -162,52 +108,45 @@ pip install -r requirements.txt    # Install dependencies
 playwright install chromium        # Install headless browser
 ```
 
-### III. Configure credentials
+### 3.3 Configure environment variables
 
-1. Copy `dot_env_template.txt` to `.env`.
+- Rename `dot_env_template.txt` to `.env` in root directory.
+- Required:
+  - `APPCOLL_USERNAME`: AppColl email/username
+  - `APPCOLL_PASSWORD`: AppColl password
+  - `OBSIDIAN_VAULT_PATH`: Obsidian Vault path (or output path)
+- Optional:
+  - `INTERNAL_URL`: Internal website (defaults to Ofinno Hub)
+  - `SHAREPOINT_EMAIL`: Microsoft ID (email)
+  - `SHAREPOINT_PASSWORD`: Microsoft password
 
-```powershell
-copy dot_env_template.txt .env
+- _NOTE: Locally exposes passwords as plain text._
+
+### 3.4 Configure global variables
+
+- Configurable variables in `config/globals.py`:
+  - `TASK_GENERATION_THRESHOLD`:  minimum score to generate tasks (default: 75)
+  - `OBSIDIAN_DOCKET_SUBFOLDER`: subfolder within the vault (default: `Docket/Daily`)
+
+### 3.5 Register automation job
+
+> Automated run defaults to weekdays at 9AM.
+
+- **macOS**: 
+  - Uses `launchd` for automatted script runs
+  - Configure `com.useful_appcoll.docket.plist`:
+    - `run_docket.sh` path
+    - `logs/` path
+    - Automated run schedule (defaults to weekdays at 9AM)
+  - Load `com.useful_appcoll.docket.plist` into `launchd`
+```bash
+chmod +x run_docket.sh  # Make script executable
+cp com.useful_appcoll.docket.plist ~/Library/LaunchAgents/com.useful_appcoll.docket.plist # Copy plist to launchd
+launchctl load ~/Library/LaunchAgents/com.useful_appcoll.docket.plist # Load plist
 ```
 
-2. Edit `.env` to include your AppColl credentials in the designated locations.
-
-  - _NOTE: Locally exposes AppColl password as plain text._
-
-### IV. Configure AppColl CSV Column Names
-
-- Script requires configuration of the column headers available to the user through AppColl.
-- Configure column headers in `config/column_map.py` as variable `COLUMN_MAP`, type `dict[str, str]`. 
-  - `key`: AppColl CSV column header (normalized to lower case and remove whitespace). 
-  - `value`: Python variable name. Used for values in `field` of `config/rules.yaml` and `config/task_help.yaml`.
-
-```powershell
-# Code stub to create config/column_map.py from powershell. Use notepad or other text editor to add/edit/delete entries.
-@"
-COLUMN_MAP: dict[str, str] = {
-    # --- Format each entry as "<csv column name>": "<python variable name>",  ---
-    # --- Example below maps column "matternum" to python variable "matter_number" ---
-    "matternum": "matter_number",
-}
-"@ | Out-File -FilePath config\column_map.py -Encoding utf8
-```
-
-### V. Configure output path (optional)
-
-Optional: Edit `config/globals.py` or add to `.env`:
-
-```
-OBSIDIAN_VAULT_PATH=C:\Users\your_username\Documents\ObsidianVault
-```
-
-Other tunable constants in `config/globals.py`:
-- `TASK_GENERATION_THRESHOLD` — minimum score to generate tasks (default: 75)
-- `OBSIDIAN_DOCKET_SUBFOLDER` — subfolder within the vault (default: `Docket/Daily`)
-
-### VI. Register the Task Scheduler job
-
-Run from project directory in PowerShell:
-
+- **Windows**:
+  - Run from root directory in PowerShell:
 ```powershell
 $ProjDir = (Resolve-Path .).Path
 schtasks /create `
@@ -215,11 +154,20 @@ schtasks /create `
   /tr "powershell.exe -NonInteractive -ExecutionPolicy Bypass -File `"$ProjDir\run_docket.ps1`"" `
   /sc WEEKLY /d MON,TUE,WED,THU,FRI /st 09:00 /f
 ```
+---
 
-The job runs every weekday at 9 AM local time. Output is appended to `logs\docket.log`.
+## 4. Manual Run
 
-### VII. Manual Run
+- **macOS**:
+```bash
+# Run via launchctl (output goes to logs/docket.log)
+launchctl start com.useful_appcoll.docket
 
+# Run the script directly (output to terminal)
+bash run_docket.sh
+```
+
+- **Windows**:
 ```powershell
 # Trigger via Task Scheduler (output goes to logs\docket.log)
 schtasks /run /tn "useful_appcoll\docket"
@@ -227,30 +175,244 @@ schtasks /run /tn "useful_appcoll\docket"
 # Run the script directly (output to terminal)
 .\run_docket.ps1
 ```
----
-
-## Customizing Rules
-
-- Rules are configurable/editable in `config/rules.yaml`. Each rule specifies conditions (field matches) and tasks (name + days-before-deadline). 
-
-- _See `config/rules.yaml` comments for details_.
-
-## Customizing Task Help Fields
-
-- Set additional info displayed inline below a task in `config/task_help.yaml` 
-  - Maps each task's `help_key` to a list of AppColl fields shown inline with that task in the report.
 
 ---
 
-## AppColl Assumptions
+## 5. Customization
 
-Script relies on the following assumptions about AppColl: 
+### 5.1 Overview
 
-  1. The default view in AppColl is filtered to include only matters owned by one person.
-  2. The default view in AppColl shows all columns referenced in `config/rules.yaml` and `config/task_help.yaml`.
+- AppColl docket entries can have one or more tasks defined for their completion. 
+- Rules map tasks to AppColl docket entries by filtering on values of AppColl columns, e.g., ***Task Type***, ***Respond By***, etc. 
+- Tasks can be supplemented with other info, e.g., responsible inventor email, prosecution strategy, etc.
+
+### 5.2 Rules
+
+> See `config/rules.yaml`
+
+- Rules define the task(s) to show with each AppColl docket entry
+- Tasks are mapped to docket entries by filtering on `conditions`
+    - Configure `field:` to `<python_variable_name>`. See [Header Map](#6-header-map).
+    - Operators (`op`):
+      - `eq` / `ne` - case-insensitive exact match          
+      - `contains`  - case-insensitive substring match    
+      - `matches`   - Regex pattern search. Use `(A|B|C)` for alternation, `.?` for optional chars
+      - `gt` / `gte` - greater than or equal to
+      - `lt` / `lte` - less than or equal to
+      - `is_null`   - field is empty (omit `value`)
+      - `is_not_null` - field is not empty (omit `value`)
+      - `in` / `not_in` - Match to a YAML list (e.g., `[US, EP, WO]`)
+    - `value:`  - Set to the value to filter on
+  - Decompose docket entry to `tasks`
+    - `name`: Display name of the task
+    - `offset_days`: # days before the AppColl ***Respond By*** date the task should be done.
+    - `help_key`: key mapping to a value in `config/task_help.yaml`. 
+2.  Schema to add a rule block to `config/rules.yaml`
+
+```yaml
+rules:
+  - id: <unique_string_id>          
+    description: <string>           # Optional   
+    conditions:                     
+      - field: <python_field_name>  
+        op: <operator>             
+        value: <value>              # Omit for `is_null` and `is_not_null`                            
+    tasks:                          # Optional
+      - name: <task_name>           # Optional
+        offset_days: <int>          # Optional
+        help_key: <string>          # Optional
+```
+
+### 5.3 Tasks
+
+> See `config/task_help.yaml` 
+
+- Configures additional information for completing a task.
+- Displayed as a subsection of a task in Markdown file.
+- Tasks are keyed to a value of `help_key` in `config/rules.yaml`.
+  - `<help_key>` in `config/task_help.yaml` must match value of `help_key` in `config/rules.yaml`.
+- Additional information can be from AppColl
+    - Configure `field:` to one of:
+      1. `<python_variable_name>`. See [Header Map](#6-header-map)
+      2. `wpm_url` for link to the Weekly Prosecution Meeting schedule
+      3. `fcr_url` for link to the Final Claims Review scheduling form
+      4. `email` for `mailto` link of the responsible inventor
+- Schema to add a task block to `config/task_help.yaml`
+
+```yaml
+task_help:
+
+  <help_key>:
+    label: <display_label>          # Section label shown in output. Optional.
+    fields:                         # Ordered list of field names to display.
+      - field: <python_field_name>
+        label: <display_label>      # Label for this field in output.
+        link_type: url | email      # Optional. Renders value as a Markdown link.
+        link_text: <display text>   # Required when link_type is "url", omit for "email"
+```
 
 ---
 
+## 6. Header Map
 
+- **AppColl CSV Value**: literal string from AppColl CSV column header row 
+- **Normalized Value**: Leading/trailing whitespace removed; lower case
+- **Python Variable Name**: For YAML files and python scripts
 
+- See `config/column_map.py`: `COLUMN_MAP` maps normalized values to python variable names. 
 
+- Configure `field:` to `<python_variable_name>` in `config/rules.yaml` and `config/task_help.yaml`.   
+
+| AppColl CSV Value | Normalized Value| Python Variable Name |
+|---|---|---|
+| `TaskStatus` | `taskstatus` | `task_status` |
+| `TaskID` | `taskid` | `task_id` |
+| `RefDate` | `refdate` | `ref_date` |
+| `Modified` | `modified` | `modified` |
+| `TaskType` | `tasktype` | `task_type` |
+| `Creator` | `creator` | `creator` |
+| `Owner` | `owner` | `owner` |
+| `Client` | `client` | `client` |
+| `Matter` | `matter` | `matter` |
+| `Document` | `document` | `document_number` |
+| `RespondBy` | `respondby` | `respond_by` |
+| `FinalDueDate` | `finalduedate` | `final_due` |
+| `DeadlineType` | `deadlinetype` | `deadline_type` |
+| `ClosedOn` | `closedon` | `closed_on` |
+| `ClosedBy` | `closedby` | `closed_by` |
+| `Comments` | `comments` | `comments` |
+| `ActualExpense` | `actualexpense` | `actual_expense` |
+| `ActualCost` | `actualcost` | `actual_cost` |
+| `BillWhenComplete` | `billwhencomplete` | `bill_when_complete` |
+| `OpenedOn` | `openedon` | `open_date` |
+| `GenByTaskID` | `genbytaskid` | `generated_by` |
+| `Complexity` | `complexity` | `complexity` |
+| `BillingItems` | `billingitems` | `billing_items` |
+| `TaskCode` | `taskcode` | `code` |
+| `ExpenseCode` | `expensecode` | `expense_code` |
+| `ActivityCode` | `activitycode` | `activity` |
+| `Discussion` | `discussion` | `discussion` |
+| `BudgetHours` | `budgethours` | `budget_hours` |
+| `BudgetExpense` | `budgetexpense` | `budget_expense` |
+| `BudgetCost` | `budgetcost` | `budget_cost` |
+| `FeesCap` | `feescap` | `fees_cap` |
+| `ExpensesCap` | `expensescap` | `expenses_cap` |
+| `Matter.MatterID` | `matter.matterid` | `matter_id` |
+| `Matter.Title` | `matter.title` | `title` |
+| `Matter.Type` | `matter.type` | `matter_type` |
+| `Matter.Status` | `matter.status` | `matter_status` |
+| `Matter.AttorneyRef` | `matter.attorneyref` | `attorney_ref` |
+| `Matter.ClientRef` | `matter.clientref` | `client_ref` |
+| `Matter.ForeignAssociateRef` | `matter.foreignassociateref` | `foreign_associate_ref` |
+| `Matter.ConfirmationNum` | `matter.confirmationnum` | `confirmation_number` |
+| `Matter.ApplicationNum` | `matter.applicationnum` | `application_number` |
+| `Matter.PublicationNum` | `matter.publicationnum` | `publication_number` |
+| `Matter.PatentNum` | `matter.patentnum` | `patent_number` |
+| `Matter.Examiner` | `matter.examiner` | `examiner` |
+| `Matter.ArtUnit` | `matter.artunit` | `art_unit` |
+| `Matter.Country` | `matter.country` | `country_full` |
+| `Matter.Classification` | `matter.classification` | `classification` |
+| `Matter.USGovAgency` | `matter.usgovagency` | `us_gov_agency` |
+| `Matter.USGovContractNum` | `matter.usgovcontractnum` | `contract` |
+| `Matter.PTOStatus` | `matter.ptostatus` | `pto_status` |
+| `Matter.PlantLatinName` | `matter.plantlatinname` | `plant_latin_name` |
+| `Matter.PlantVarietyName` | `matter.plantvarietyname` | `variety` |
+| `Matter.PlantNewCultivated` | `matter.plantnewcultivated` | `new_cultivated_variety` |
+| `Matter.NonPublication` | `matter.nonpublication` | `non_publication` |
+| `Matter.EarlyPublication` | `matter.earlypublication` | `early_publication` |
+| `Matter.CreatedDate` | `matter.createddate` | `created_date` |
+| `Matter.PriorityDate` | `matter.prioritydate` | `priority_field` |
+| `Matter.ForeignFile` | `matter.foreignfile` | `foreign_file` |
+| `Matter.PlannedFilingDate` | `matter.plannedfilingdate` | `planned_filing_date` |
+| `Matter.FilingDate` | `matter.filingdate` | `filing_date` |
+| `Matter.PublicationDate` | `matter.publicationdate` | `publication_date` |
+| `Matter.ExpectedFirstOfficeActionDate` | `matter.expectedfirstofficeactiondate` | `first_office_action` |
+| `Matter.AllowanceDate` | `matter.allowancedate` | `allowance_date` |
+| `Matter.AbandonedDate` | `matter.abandoneddate` | `abandoned_date` |
+| `Matter.IssueDate` | `matter.issuedate` | `issue_date` |
+| `Matter.ExpiredDate` | `matter.expireddate` | `expiration_date` |
+| `Matter.ActualCost` | `matter.actualcost` | `matter_actual_cost` |
+| `Matter.IntlSearchAuth` | `matter.intlsearchauth` | `intl_search_auth` |
+| `Matter.PPHCountry` | `matter.pphcountry` | `pph_qualified` |
+| `Matter.Attorney` | `matter.attorney` | `lead_attorney` |
+| `Matter.Paralegal` | `matter.paralegal` | `paralegal` |
+| `Matter.ForeignAssociate` | `matter.foreignassociate` | `foreign_associate` |
+| `Matter.Client` | `matter.client` | `matter_client` |
+| `Matter.ClientContact` | `matter.clientcontact` | `client_contact` |
+| `Matter.LawFirm` | `matter.lawfirm` | `law_firm` |
+| `Matter.FirstInventor` | `matter.firstinventor` | `first_inventor` |
+| `Matter.Inventors` | `matter.inventors` | `inventors` |
+| `Matter.LeadInventor` | `matter.leadinventor` | `lead_inventor` |
+| `Matter.RequestContinuedExamination` | `matter.requestcontinuedexamination` | `rce` |
+| `Matter.Modified` | `matter.modified` | `matter_modified` |
+| `Matter.Notes` | `matter.notes` | `notes` |
+| `Matter.ReelFrame` | `matter.reelframe` | `reel_frame` |
+| `Matter.LastPairUpdate` | `matter.lastpairupdate` | `last_pair_updated` |
+| `Matter.TerminalDisclaimer` | `matter.terminaldisclaimer` | `terminal_disclaimer` |
+| `Matter.State` | `matter.state` | `state` |
+| `Matter.GoodsAndServices` | `matter.goodsandservices` | `goods_and_services` |
+| `Matter.Partner` | `matter.partner` | `partner` |
+| `Matter.Contributor` | `matter.contributor` | `contributor` |
+| `Matter.PatentTermAdjustment` | `matter.patenttermandjustment` | `patent_term_adjustment` |
+| `Matter.Assignee` | `matter.assignee` | `assignee` |
+| `Matter.OfficialFilingDate` | `matter.officialfilingdate` | `official_filing_date` |
+| `Matter.Image` | `matter.image` | `image` |
+| `Matter.EntityStatus` | `matter.entitystatus` | `entity_status` |
+| `Matter.FastTrack` | `matter.fasttrack` | `fast_track` |
+| `Matter.Products` | `matter.products` | `products` |
+| `Matter.Keywords` | `matter.keywords` | `keywords` |
+| `Matter.Technologies` | `matter.technologies` | `technologies` |
+| `Matter.FamilyID` | `matter.familyid` | `family_id` |
+| `Matter.FilingBasis` | `matter.filingbasis` | `basis` |
+| `Matter.PriorityMatter` | `matter.prioritymatter` | `priority_matter` |
+| `Matter.CountryCode` | `matter.countrycode` | `country` |
+| `Matter.Connections` | `matter.connections` | `connections` |
+| `Matter.Applicants` | `matter.applicants` | `applicants` |
+| `Matter.AdverseParties` | `matter.adverseparties` | `adverse_judgment` |
+| `Matter.Licensees` | `matter.licensees` | `license` |
+| `Matter.NextExternalTaskDueDate` | `matter.nextexternaltaskduedate` | `next_external_deadline` |
+| `Matter.NextExternalTask` | `matter.nextexternaltask` | `next_external_task` |
+| `Matter.TrademarkRegister` | `matter.trademarkregister` | `trademark_registration` |
+| `Matter.WIPODASAccessCode` | `matter.wipodaccesscode` | `wipo_das_access` |
+| `Matter.LastPatentOfficeUpdateStatus` | `matter.lastpatentoffice updatestatus` | `last_patent_office_update_status` |
+| `Matter.LastPatentOfficeUpdateSource` | `matter.lastpatentofficeupdatesource` | `last_patent_office_update_source` |
+| `Matter.LastPatentOfficeUpdateDate` | `matter.lastpatentofficeupdatedate` | `last_patent_office_update_date` |
+| `Matter.NumberOfClaims` | `matter.numberofclaims` | `number_of_claims` |
+| `Matter.NumberOfIndependentClaims` | `matter.numberofindependentclaims` | `independent_claims` |
+| `Matter.SubmissionDate` | `matter.submissiondate` | `submission_date` |
+| `Matter.RevivedDate` | `matter.reviveddate` | `revival_date` |
+| `Matter.RateCategory` | `matter.ratecategory` | `rate_category` |
+| `Matter.Complexity` | `matter.complexity` | `matter_complexity` |
+| `Matter.OpenTaskCountExternal` | `matter.opentaskcountexternal` | `open_task_count_external` |
+| `Matter.OpenTaskCountInternal` | `matter.opentaskcountinternal` | `open_task_count_internal` |
+| `Matter.NextInternalTask` | `matter.nextinternaltask` | `next_internal_task` |
+| `Matter.NextInternalTaskDueDate` | `matter.nextinternaltaskduedate` | `next_internal_task_due` |
+| `Matter.RegistrationNumberID` | `matter.registrationnumberid` | `registration_number_id` |
+| `Matter.Discussion` | `matter.discussion` | `matter_discussion` |
+| `Matter.UnitaryEffect` | `matter.unitaryeffect` | `unitary_effect` |
+| `Matter.EarliestBenefitDate` | `matter.earliestbenefitdate` | `earliest_benefit_date` |
+| `Matter.BillAfterFiling` | `matter.billafterfiling` | `bill_after_filing` |
+| `Matter.BillingContact` | `matter.billingcontact` | `billing_contact` |
+| `Matter.BudgetCost` | `matter.budgetcost` | `matter_budget_cost` |
+| `Matter.FeesCap` | `matter.feescap` | `fees_cap` |
+| `Matter.ExpensesCap` | `matter.expensescap` | `matter_expenses_cap` |
+| `Matter.RelevantStandardsDocs` | `matter.relevantstandardsdocs` | `relevant_standards_doc` |
+| `Matter.Portfolio` | `matter.portfolio` | `portfolio` |
+| `Matter.ResponsibleInventor` | `matter.responsibleinventor` | `responsible_inventor` |
+| `Matter.SEP` | `matter.sep` | `sep_status` |
+| `Matter.ToyotaSelection` | `matter.toyotaselection` | `toyota_selection` |
+| `Matter.PhilipsSelection` | `matter.philipsselection` | `philips_status` |
+| `Matter.FilingTier` | `matter.filingtier` | `tier` |
+| `Matter.AvanciStatus` | `matter.avancistatus` | `avanci_status` |
+| `Matter.StandardsContribution` | `matter.standardscontribution` | `standards_contribution` |
+| `Matter.ShortDescription` | `matter.shortdescription` | `short_description` |
+| `Matter.PStrat` | `matter.pstrat` | `psa` |
+| `Matter.NonProvSelection` | `matter.nonprovselection` | `non_provisional_ref` |
+| `Matter.TechnologyCategory` | `matter.technologycategory` | `technology_category` |
+| `Matter.PatentFamily` | `matter.patentfamily` | `patent_family` |
+| `Matter.StandardVersions` | `matter.standardversions` | `version` |
+| `Matter.ComcastSelection` | `matter.comcastselection` | `comcast` |
+| `Matter.ComcastMeeting` | `matter.comcastmeeting` | `comcast_meeting` |
+| `Matter.PhilipsMeeting` | `matter.philipsmeeting` | `philips_meeting` |
+| `Matter.LicProjDate` | `matter.licprojdate` | `license_project` |
+| `Matter.ToyotaMeeting` | `matter.toyotameeting` | `toyota_meeting` |

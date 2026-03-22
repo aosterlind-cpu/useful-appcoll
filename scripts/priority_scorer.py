@@ -13,6 +13,7 @@ from config.globals import (
     PRIORITY_SCORE_OFFSETS,
     PRIORITY_SCORE_OVERDUE,
     PRIORITY_SCORE_NO_DEADLINE,
+    PRIORITY_SCORE_EXTENDIBLE,
     PRIMARY_DEADLINE_FIELD,
     FALLBACK_DEADLINE_FIELD,
 )
@@ -72,11 +73,35 @@ def compute_priority_score(entry: dict, today: date | None = None) -> tuple[int,
     # Walk through offsets (sorted descending). Keep updating score as long as
     # days_until <= offset. Stop at the first offset that days_until exceeds.
     score = 0
+
+    status = entry.get("task_status", "") or ""
+    if status.lower() != "open":
+        return score
+    
+    score = 0
+
+    complex_entries = ["respond", "atty", "hard", "file"]
+    entry_type = entry.get("task_type", "") or ""
+    if any(keyword in entry_type.lower() for keyword in complex_entries):
+        score = 50
+    
+    no_extension_entries = ["final", "non-extendible", "non extendible", "nonextendible"]
+    comments = entry.get("comments", "") or ""
+    hard_deadline = False
+    if any(keyword in comments.lower() for keyword in no_extension_entries):
+        hard_deadline = True
+    
+
+
     for score_value, offset_days in PRIORITY_SCORE_OFFSETS:
         if days_until <= offset_days:
             score = score_value
         else:
             # List is sorted descending, so no later entry can match either.
             break
+    
+    extendible = entry.get("deadline_type)", "") or ""
+    if "extendible" in extendible.lower() and "hard" not in extendible.lower():
+        score = score + PRIORITY_SCORE_EXTENDIBLE if score > PRIORITY_SCORE_EXTENDIBLE else 0
 
     return score, deadline

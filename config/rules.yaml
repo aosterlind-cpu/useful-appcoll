@@ -1,60 +1,78 @@
 # config/rules.yaml
-#
-# SCHEMA:
-# rules:
-#   - id: <unique_string_id>          # Required. Used in logs and debugging.
-#     description: <human_readable>   # Optional.
-#     conditions:                     # ALL conditions must be true (logical AND).
-#       - field: <python_field_name>  # Normalized column header mapped to readable python variable name. See README.md, section "Customizing Rules", "Note on Column Headers"
-#         op: <operator>              # One of: eq, ne, contains, matches, gt, lt,
-#                                     #   gte, lte, is_null, is_not_null, in, not_in
-#         value: <value>              # Comparison value (omit for is_null/is_not_null).
-#     tasks:
-#       - name: <task_name>           # Display name of the task.
-#         offset_days: <int>          # Days before deadline when this task should be done.
-#                                     # Largest offset = highest subpriority (most urgent).
-#         help_key: <string>          # Key to look up in task_help.yaml. Optional.
-#
-# OPERATORS:
-#   eq          - exact equality (case-insensitive for strings)
-#   ne          - not equal
-#   contains    - substring match (case-insensitive)
-#   matches     - full Python regex search against the field value
-#   gt/lt       - numeric or date greater/less than
-#   gte/lte     - numeric or date greater/less than or equal
-#   is_null     - field is empty/null/NaN
-#   is_not_null - field is not empty
-#   in          - field value is in a provided list
-#   not_in      - field value is not in a provided list
-#
-# HOW TO ADD A RULE:
-#   1. Copy an existing rule block.
-#   2. Give it a unique `id`.
-#   3. Set conditions to match the desired docket entry characteristics.
-#   4. Define tasks with names and offset_days values.
-#   5. Optionally add a help_key referencing an entry in task_help.yaml.
-#
-# HOW TO EDIT A RULE:
-#   Modify any field within the rule. Changing `id` breaks log references.
-#
-# HOW TO DELETE A RULE:
-#   Remove the entire rule block (from `- id:` to the end of its `tasks:` list).
-#
-# ---------------------------------------------------------------------------
 
 rules:
+
+  # ---------------------------------------------------------------------------
+  # PCT NATIONAL PHASE FILING 1
+  # ---------------------------------------------------------------------------
+  - id: 1_pct_national_phase_filing
+    description: Tasks for national phase filing of a PCT application.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: contains
+        value: "open.*PCT.*application"
+      - field: matter_type
+        op: contains
+        value: "provisional"
+    tasks:
+      - name: Meet with responsible inventor for SEP and national phase filing discussion
+        offset_days: 45
+        help_key: pct_national_phase_filing_inventor_meeting
+      - name: Draft claims for national phase filing
+        offset_days: 40
+        help_key: pct_national_phase_filing_claims 
+      - name: WPM review of national phase filing strategy and claims
+        offset_days: 30
+        help_key: pct_national_phase_filing_wpm_review
+      - name: Finalize and file national phase application
+        offset_days: 20
+        help_key: pct_national_phase_filing_finalize     
+  
+  # ---------------------------------------------------------------------------
+  # PCT NATIONAL PHASE FILING 2
+  # ---------------------------------------------------------------------------
+  - id: 2_pct_national_phase_filing
+    description: Tasks for national phase filing of a PCT application.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: contains
+        value: "file.*PCT.*application"
+      - field: matter_type
+        op: contains
+        value: "pct"
+      - field: matter_status
+        op: contains
+        value: "unfiled"
+    tasks:
+      - name: Meet with responsible inventor for SEP and national phase filing discussion
+        offset_days: 30
+        help_key: pct_national_phase_filing_inventor_meeting
+      - name: Draft claims for national phase filing
+        offset_days: 25
+        help_key: pct_national_phase_filing_claims 
+      - name: WPM review of national phase filing strategy and claims
+        offset_days: 20
+        help_key: pct_national_phase_filing_wpm_review
+      - name: Finalize and file national phase application
+        offset_days: 15
+        help_key: pct_national_phase_filing_finalize   
 
   # ---------------------------------------------------------------------------
   # SEP OFFICE ACTION RESPONSE
   # ---------------------------------------------------------------------------
   - id: us_oa_response_sep
-    description: >
-      Tasks for responding to a US office action marked as SEP.
+    description: Tasks for responding to a US office action marked as SEP.
     conditions:
       - field: country
         op: eq
         value: "US"
-      - field: entry_type
+      - field: task_type
         op: matches
         value: "(Respond to Non.?Final Office Action|Respond to Office Action|Office Action Response|Respond to Final Office Action|Respond to Final OA|Final Office Action|Final OA)"
       - field: sep_status
@@ -63,10 +81,10 @@ rules:
         op: eq
         value: "Open"
     tasks:
-      - name: Review Office Action and claims; identify all rejections and objections
+      - name: Prepare response strategy
         offset_days: 30
         help_key: us_oa_sep_review
-      - name: Confirm amendments maintain read on applicable standard
+      - name: Meet with responsible inventor to discuss response strategy
         offset_days: 25
         help_key: us_oa_sep_review_inventor_meeting
       - name: Obtain WPM approval for proposed response strategy and amendments
@@ -75,3 +93,4 @@ rules:
       - name: Draft and file response
         offset_days: 10
         help_key: us_oa_sep_finalize
+

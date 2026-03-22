@@ -13,7 +13,7 @@
     <string>/Users/your_username/path/to/useful_appcoll/run_docket.sh</string>
   </array>
 
-  <!-- 9:00 AM local time, Monday–Friday (launchd weekdays: 1=Mon, 5=Fri) -->
+  <!-- 9:00 AM local time, Monday–Friday (launchd weekdays: 1=Mon, ..., 5=Fri) -->
   <key>StartCalendarInterval</key>
   <array>
     <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
