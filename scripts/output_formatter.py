@@ -228,13 +228,11 @@ def _build_entry_block(entry: dict, today: date) -> str:
 
     due_parts = []
     due_parts.append(f"**Due (next/final):** *{_fmt_date(deadline)}*")
-    final_due = entry.get("final_due", "") or ""
-    if final_due and final_due.strip() != "":
+    final_due = entry.get("final_due") 
+    if final_due:
         due_parts.append(f" *{_fmt_date(final_due)}*  ")
     lines.append("  \u00b7  ".join(due_parts) + "  ")
     lines.append(f"**Days Before Due:** {days_str}  ")
-
-    next_steps = []
 
     next_external = entry.get("next_external_task", "") or ""
     next_internal = entry.get("next_internal_task", "") or ""
