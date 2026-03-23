@@ -101,7 +101,7 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
         for e in deadline_rows:
             
 
-            link = f"[[#^[{e.get('_priority_number', 0)}] {e.get('matter', 'N/A')}"
+            link = f"[[#^[{e.get('_priority_number', 0)}] \u00b7 {e.get('matter', 'N/A')}"
             link += f" \u00b7 {e.get('task_type', 'N/A')}"
             link += f"\\|{e.get('task_type', 'N/A')}]]"
 
@@ -177,7 +177,7 @@ def _build_task_block(task: dict, today: date) -> str:
         if help_label and help_label.strip() != "":
             lines.append(f"> **{help_label}**  ")
         for label, value in help_fields.items():
-            lines.append(f">     - **{label}**: {value}  ")
+            lines.append(f"> - **{label}**: {value}  ")
 
     lines.append("")
 

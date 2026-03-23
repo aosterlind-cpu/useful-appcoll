@@ -33,7 +33,6 @@
 task_help:
 
   us_oa_sep_review:
-    label: "OA Strategy Info"
     fields: 
       - field: connections
         label: "Counterparts"
@@ -43,7 +42,6 @@ task_help:
         label: "Standards Doc(s)"
 
   us_oa_sep_review_inventor_meeting:
-    label: "Inventor Meeting Info"
     fields:
       - field: responsible_inventor
         label: "Responsible Inventor"
@@ -53,7 +51,6 @@ task_help:
 
 
   pct_national_phase_filing_finalize:
-    label: "Inventor Meeting Info"
     fields:
       - field: responsible_inventor
         label: "Responsible Inventor"
@@ -66,7 +63,6 @@ task_help:
         label: "Standards Doc(s)"
 
   us_oa_sep_wpm:
-    label: "WPM Review Info"
     fields:
       - field: connections
         label: "Counterparts" 
@@ -80,7 +76,6 @@ task_help:
         link_text: "WPM schedule on Dropbox"
   
   prov_invention_disclosure:
-    label: "Responsible Inventor Info"
     fields:
       - field: responsible_inventor
         label: "Responsible Inventor"
@@ -89,7 +84,6 @@ task_help:
         link_type: email
   
   prov_inventor_claims_review:
-    label: "Inventor Claims Review Info"
     fields:
       - field: responsible_inventor
         label: "Responsible Inventor"
@@ -102,7 +96,6 @@ task_help:
         label: "Standards Doc(s)"
 
   prov_fcr_meeting:
-    label: "FCR Meeting Info"
     fields:
       - field: responsible_inventor
         label: "Responsible Inventor"
@@ -119,7 +112,6 @@ task_help:
         link_text: "FCR request on Office Forms"
 
   foreign_div_inventor_meeting:
-    label: "Inventor Meeting Info"
     fields:
       - field: connections
         label: "Counterparts" 
@@ -134,7 +126,6 @@ task_help:
         label: "Standards Doc(s)"
 
   foreign_div_wpm:
-    label: "WPM Review Info"
     fields:
       - field: connections
         label: "Counterparts" 
@@ -148,7 +139,6 @@ task_help:
         link_text: "WPM schedule on Dropbox"
 
   con_inventor_meeting:
-    label: "Inventor Meeting Info"
     fields:
       - field: connections
         label: "Counterparts" 
@@ -163,7 +153,6 @@ task_help:
         label: "Standards Doc(s)"
 
   con_wpm:
-    label: "WPM Review Info"
     fields:
       - field: connections
         label: "Counterparts" 
