@@ -81,9 +81,7 @@ def _build_file_header(today: date, csv_meta: dict) -> str:
 
 def _build_todays_todo(entries: list[dict], today: date) -> str:
     date_str = _fmt_date(today)
-    lines: list[str] = [
-        f"\n## Docket Report \u2014 {date_str}\n",
-    ]
+    lines: list[str] = []
 
     # Filing deadlines due today
     deadline_rows = []
@@ -103,7 +101,7 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
 
             link = f"[[#^[{e.get('_priority_number', 0)}] \u00b7 {e.get('matter', 'N/A')}"
             link += f" \u00b7 {e.get('task_type', 'N/A')}"
-            link += f"\\|{e.get('task_type', 'N/A')}]]"
+            link += f"\\|{e.get('task_type', 'N/A')[:38] + ('...' if len(str(e.get('task_type', '')))>38 else '')}]]"
 
             if e.get("publication_number") and e.get("publication_number") is not None:
                 pub_link = f"[{e.get('publication_number', 'N/A')}]"
@@ -140,7 +138,7 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
                 f"| {sp_link} "
                 f"| {name_link} "
                 f"| {e.get('matter', 'N/A')} "
-                f"| {e.get('task_type', 'N/A')} |"    
+                f"| {e.get('task_type', 'N/A')[:38] + ('...' if len(str(e.get('task_type', '')))>38 else '')} |"    
             )
     else:
         lines.append("_No tasks due today._")
@@ -219,6 +217,10 @@ def _build_entry_block(entry: dict, today: date) -> str:
     pub_number = entry.get("publication_number", "") or ""
     if not pub_number or str(pub_number).strip() == "":
         pub_number = "*none*"
+    else:
+        pub_number = f"[{entry.get('country', '')}{entry.get('publication_number', 'N/A')}]"
+        pub_number += f"(https://patents.google.com/patent/{entry.get('country', '')}{str(entry.get('publication_number', '')).replace('/', '')})"
+
     app_parts.append(f"**Pub #**: {pub_number}  ")
 
     lines.append("  \u00b7  ".join(app_parts) + "  ")

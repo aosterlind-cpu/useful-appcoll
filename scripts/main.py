@@ -62,9 +62,7 @@ def main() -> None:
             entry["_priority_score"] = score
             entry["_effective_deadline"] = deadline
             priority_entries.append(entry)
-            log.info(f"Task ID {entry.get('task_id', '')}: Assigned priority score {score} with effective deadline {deadline}")
         else:
-            log.info(f"Task ID {entry.get('task_id', '')}: Priority score {score} below threshold, excluded from report")
             continue
 
     # 4. Sort: descending score, then document_number for tie-breaking

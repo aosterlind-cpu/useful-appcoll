@@ -50,7 +50,7 @@ task_help:
         link_type: email
 
 
-  pct_national_phase_filing_finalize:
+  pct_national_phase_filing_inventor_meeting:
     fields:
       - field: responsible_inventor
         label: "Responsible Inventor"
@@ -61,15 +61,24 @@ task_help:
         label: "Standard Release"
       - field: relevant_standards_doc
         label: "Standards Doc(s)"
+  
+  pct_national_phase_filing_wpm:
+    fields:
+      - field: connections
+        label: "Counterparts" 
+      - field: short_description
+        label: "Summary"
+      - field: wpm_url
+        label: "WPM Schedule"
+        link_type: url
+        link_text: "WPM schedule on Dropbox"
 
   us_oa_sep_wpm:
     fields:
       - field: connections
         label: "Counterparts" 
-      - field: version
-        label: "Standard Release"
-      - field: relevant_standards_doc
-        label: "Standards Doc(s)"
+      - field: short_description
+        label: "Summary"
       - field: wpm_url
         label: "WPM Schedule"
         link_type: url
@@ -106,6 +115,8 @@ task_help:
         label: "Standard Release"
       - field: relevant_standards_doc
         label: "Standards Doc(s)"
+      - field: short_description
+        label: "Summary"
       - field: fcr_url
         label: "FCR Request"
         link_type: url
@@ -129,10 +140,8 @@ task_help:
     fields:
       - field: connections
         label: "Counterparts" 
-      - field: version
-        label: "Standard Release"
-      - field: relevant_standards_doc
-        label: "Standards Doc(s)"
+      - field: short_description
+        label: "Summary"
       - field: wpm_url
         label: "WPM Schedule"
         link_type: url
@@ -156,13 +165,25 @@ task_help:
     fields:
       - field: connections
         label: "Counterparts" 
-      - field: version
-        label: "Standard Release"
-      - field: relevant_standards_doc
-        label: "Standards Doc(s)"
+      - field: short_description
+        label: "Summary"
       - field: wpm_url
         label: "WPM Schedule"
         link_type: url
         link_text: "WPM schedule on Dropbox"
   
+  foreign_issue_fee_review:
+    fields:
+      - field: connections
+        label: "Counterparts" 
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
 
+  foreign_issue_fee_finalize:
+    fields:
+      - field: foreign_associate
+        label: "Foreign Associate"
+      - field: foreign_associate_ref
+        label: "Foreign Associate Ref"
