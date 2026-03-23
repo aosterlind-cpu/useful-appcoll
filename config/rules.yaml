@@ -15,12 +15,9 @@ rules:
         op: matches
         value: "(file.*PCT.*application|PCT.*file*national.*phase)"
     tasks:
-      - name: Conduct invention disclosure meeting; Draft broad and teaching claims
+      - name: Meet with responsible inventor to draft broad and teaching claims
         offset_days: 30
         help_key: pct_national_phase_filing_inventor_meeting
-      - name: Draft claims for national phase filing
-        offset_days: 25
-        help_key: pct_national_phase_filing_claims 
       - name: WPM review of national phase filing strategy and claims
         offset_days: 20
         help_key: pct_national_phase_filing_wpm
