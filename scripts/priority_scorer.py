@@ -14,6 +14,7 @@ from config.globals import (
     PRIORITY_SCORE_OVERDUE,
     PRIORITY_SCORE_NO_DEADLINE,
     PRIORITY_SCORE_EXTENDIBLE,
+    PRIORITY_SCORE_NON_EXTENDIBLE,
     PRIMARY_DEADLINE_FIELD,
     FALLBACK_DEADLINE_FIELD,
 )
@@ -67,9 +68,6 @@ def compute_priority_score(entry: dict, today: date | None = None) -> tuple[int,
 
     days_until = (deadline - today).days
 
-    if days_until <= 0:
-        return PRIORITY_SCORE_OVERDUE, deadline
-
     # Walk through offsets (sorted descending). Keep updating score as long as
     # days_until <= offset. Stop at the first offset that days_until exceeds.
     score = 0
@@ -85,11 +83,8 @@ def compute_priority_score(entry: dict, today: date | None = None) -> tuple[int,
     if any(keyword in entry_type.lower() for keyword in complex_entries):
         score = 50
     
-    no_extension_entries = ["final", "non-extendible", "non extendible", "nonextendible"]
     comments = entry.get("comments", "") or ""
-    hard_deadline = False
-    if any(keyword in comments.lower() for keyword in no_extension_entries):
-        hard_deadline = True
+    deadline_type = entry.get("deadline_type)", "") or ""
     
 
 
@@ -100,8 +95,18 @@ def compute_priority_score(entry: dict, today: date | None = None) -> tuple[int,
             # List is sorted descending, so no later entry can match either.
             break
     
-    extendible = entry.get("deadline_type)", "") or ""
-    if "extendible" in extendible.lower() and "hard" not in extendible.lower():
+    if days_until < 1:
+        if("non-extendable" in comments.lower() or "hard" in deadline_type.lower()):
+            score = PRIORITY_SCORE_OVERDUE + 5
+            log.info(f"Task ID {entry.get('task_id', '')}: {score} (Urgent hard deadline)")
+        else:
+            score = PRIORITY_SCORE_OVERDUE
+            log.info(f"Task ID {entry.get('task_id', '')}: {score} (Overdue)")
+
+    if str(entry.get("task_type")).strip() == "Respond to Final Office Action - 2 Month Deadline":
         score = score + PRIORITY_SCORE_EXTENDIBLE if score > PRIORITY_SCORE_EXTENDIBLE else 0
+        log.info(f"Task ID {entry.get('task_id', '')}: {score} FOA 2 month deadline (extendible decrease)")
+    
+
 
     return score, deadline

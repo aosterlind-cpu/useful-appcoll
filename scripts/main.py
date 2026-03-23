@@ -25,6 +25,7 @@ from scripts.subpriority_engine import assign_subpriorities
 from scripts.task_help_annotator import annotate_task_help
 from scripts.url_fetcher import fetch_urls
 from scripts.output_formatter import build_markdown
+from scripts.previous_report_reader import load_completed_tasks
 from scripts.vault_writer import write_to_vault
 
 logging.basicConfig(
@@ -61,7 +62,9 @@ def main() -> None:
             entry["_priority_score"] = score
             entry["_effective_deadline"] = deadline
             priority_entries.append(entry)
+            log.info(f"Task ID {entry.get('task_id', '')}: Assigned priority score {score} with effective deadline {deadline}")
         else:
+            log.info(f"Task ID {entry.get('task_id', '')}: Priority score {score} below threshold, excluded from report")
             continue
 
     # 4. Sort: descending score, then document_number for tie-breaking
@@ -77,6 +80,15 @@ def main() -> None:
             entry["_tasks"] = generate_tasks_for_entry(entry)
         else:
             entry["_tasks"] = []
+
+    # 6.5 Carry forward completed tasks from the most recent previous report
+    completed_tasks = load_completed_tasks(today)
+    for entry in priority_entries:
+        key = (entry.get("matter", ""), entry.get("task_type", ""))
+        done = completed_tasks.get(key, set())
+        for task in entry.get("_tasks", []):
+            if task["name"] in done:
+                task["_completed"] = True
 
     # 7. Assign subpriorities and compute/adjust task dates
     for entry in priority_entries:

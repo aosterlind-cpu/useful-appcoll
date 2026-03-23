@@ -34,17 +34,17 @@ PRIORITY_SCORE_OFFSETS: list[tuple[int, int]] = [
     (90, 1),    # Score 90: deadline is 1-2 days away
 ]
 
-# Score assigned when deadline is TODAY or has ALREADY PASSED
-PRIORITY_SCORE_OVERDUE: int = 100
+# Score offset increase when deadline is TODAY or has ALREADY PASSED
+PRIORITY_SCORE_OVERDUE: int = 95
 
 # Score assigned when no deadline date is available (respond_by is null)
 PRIORITY_SCORE_NO_DEADLINE: int = 0
 
-# Score adjustment applied when deadline is not hard but is extendible 
-PRIORITY_SCORE_EXTENDIBLE: int = -15
+# Score offset decrease applied when deadline is not hard but is extendible 
+PRIORITY_SCORE_EXTENDIBLE: int = -5
 
-# Score adjustment applied when deadline is not extendible 
-PRIORITY_SCORE_NON_EXTENDIBLE: int = 15
+# Score offset increase applied when deadline is not extendible 
+PRIORITY_SCORE_NON_EXTENDIBLE: int = 5
 
 # Score Threshold for being included in docket output. Only entries with score >= this value will be included. 
 PRIORITY_SCORE_THRESHOLD: int = 70

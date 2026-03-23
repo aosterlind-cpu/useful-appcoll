@@ -97,8 +97,8 @@ def _clean_str(raw) -> str | None:
     """Return stripped string or None if empty/NaN."""
     if raw is None:
         return None
-    s = str(raw).strip().lower()
-    return s if s not in ("", "nan", "none", "na") else None
+    s = str(raw).strip()
+    return s if s.lower() not in ("", "nan", "none", "na") else None
 
 
 def _find_csv(warnings: list[str]) -> Path:

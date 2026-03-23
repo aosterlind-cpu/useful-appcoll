@@ -45,13 +45,14 @@ useful_appcoll/
 ├── run_docket.ps1              # PowerShell entry point (Windows)
 ├── config/
 │   ├── globals.py              # All tunable constants (scores, thresholds, paths)
-│   ├── column_map.py           # CSV Column Mapping (see "III. Configure CSV Fields") 
+│   ├── column_map.py           # CSV Column Mapping
 │   ├── rules.yaml              # Rule-based task generator rules
 │   └── task_help.yaml          # Per-task contextual field mappings
 ├── scripts/
 │   ├── main.py                 # Entry point
 │   ├── appcoll_downloader.py   # Fetches AppColl CSV exports
 │   ├── csv_loader.py           # CSV ingestion and normalization
+│   ├── previous_report_reader.py      # Updates tasks using last Markdown output
 │   ├── priority_scorer.py      # Priority scoring engine
 │   ├── task_generator.py       # Rule-based task generation
 │   ├── subpriority_engine.py   # Subpriority assignment and date adjustment
