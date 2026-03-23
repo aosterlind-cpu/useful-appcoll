@@ -130,13 +130,15 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
 
     lines.append("\n### Docket Entry Priority Tasks\n")
     if task_rows:
-        lines.append("| Due | Task | Matter No. | Docket Entry |")
-        lines.append("|---|---|---|---|")
+        lines.append("| Due | # | Task | Matter No. | Docket Entry |")
+        lines.append("|---|---|---|---|---|")
         for e, t in task_rows:
-            link = f"[[#^{str(t['subpriority']).replace('.', '-')}\\|{t['display_name']}]]"
+            name_link = f"[[#^{str(t['subpriority']).replace('.', '-')}\\|{t['display_name']}]]"
+            sp_link = f"[[#^{str(t['subpriority']).replace('.', '-')}\\|{t['subpriority']}]]"
             lines.append(
-                f"| {t['target_date']} "
-                f"| {link} "
+                f"| {_short_date(t['target_date'], today)} "
+                f"| {sp_link} "
+                f"| {name_link} "
                 f"| {e.get('matter', 'N/A')} "
                 f"| {e.get('task_type', 'N/A')} |"    
             )
@@ -305,7 +307,7 @@ def _build_entry_block(entry: dict, today: date) -> str:
 
     tasks: list[dict] = entry.get("_tasks", [])
     if tasks:
-        lines.append("\n#### Tasks")
+        lines.append("#### Tasks \n")
         for task in tasks:
             lines.append(_build_task_block(task, today))
 
