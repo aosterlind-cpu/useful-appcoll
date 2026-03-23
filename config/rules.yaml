@@ -93,4 +93,58 @@ rules:
       - name: Draft and file response
         offset_days: 10
         help_key: us_oa_sep_finalize
+  
+  # ---------------------------------------------------------------------------
+  # FOREIGN DIV FILING
+  # ---------------------------------------------------------------------------
+  - id: us_oa_response_sep
+    description: Tasks for filing a foreign divisional application.
+    conditions:
+      - field: country
+        op: ne
+        value: "US"
+      - field: task_type
+        op: matches
+        value: "(file.*divisional|foreign.*open.*div)"
+      - field: task_status
+        op: eq
+        value: "Open"
+    tasks:
+      - name: Meet with responsible inventor to discuss DIV strategy
+        offset_days: 20
+        help_key: foreign_div_inventor_meeting
+      - name: Obtain WPM approval for proposed response strategy and amendments
+        offset_days: 10
+        help_key: foreign_div_wpm
+      - name: File divisional application
+        offset_days: 5
+        help_key: foreign_div_finalize
+
+  
+  # ---------------------------------------------------------------------------
+  # US CON FILING
+  # ---------------------------------------------------------------------------
+  - id: us_oa_response_sep
+    description: Tasks for filing a US CON application.
+    conditions:
+      - field: country
+        op: eq
+        value: "US"
+      - field: task_type
+        op: matches
+        value: "(file.*continuing|open.*continuation)"
+      - field: task_status
+        op: eq
+        value: "Open"
+    tasks:
+      - name: Meet with responsible inventor to discuss US CON strategy
+        offset_days: 20
+        help_key: con_inventor_meeting
+      - name: Obtain WPM approval for proposed response strategy and amendments
+        offset_days: 10
+        help_key: con_wpm
+      - name: File divisional application
+        offset_days: 5
+        help_key: con_finalize
+
 

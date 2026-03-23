@@ -66,7 +66,7 @@ TASK_GENERATION_THRESHOLD: int = 70
 OBSIDIAN_VAULT_PATH: str = "~/Documents/ObsidianVault"
 
 # Sub-folder within the vault where daily docket notes are written
-OBSIDIAN_DOCKET_SUBFOLDER: str = "Docket/Daily"
+OBSIDIAN_DOCKET_SUBFOLDER: str = "Docket"
 
 # Filename pattern for the daily note. Supports strftime codes.
 OBSIDIAN_FILENAME_PATTERN: str = "Docket_%Y-%m-%d.md"

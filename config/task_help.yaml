@@ -101,7 +101,7 @@ task_help:
       - field: relevant_standards_doc
         label: "Standards Doc(s)"
 
-  prof_fcr_meeting:
+  prov_fcr_meeting:
     label: "FCR Meeting Info"
     fields:
       - field: responsible_inventor
@@ -117,5 +117,63 @@ task_help:
         label: "FCR Request"
         link_type: url
         link_text: "FCR request on Office Forms"
+
+  foreign_div_inventor_meeting:
+    label: "Inventor Meeting Info"
+    fields:
+      - field: connections
+        label: "Counterparts" 
+      - field: responsible_inventor
+        label: "Responsible Inventor"
+      - field: email
+        label: "Resp. Inv. Email"
+        link_type: email  
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
+
+  foreign_div_wpm:
+    label: "WPM Review Info"
+    fields:
+      - field: connections
+        label: "Counterparts" 
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
+      - field: wpm_url
+        label: "WPM Schedule"
+        link_type: url
+        link_text: "WPM schedule on Dropbox"
+
+  con_inventor_meeting:
+    label: "Inventor Meeting Info"
+    fields:
+      - field: connections
+        label: "Counterparts" 
+      - field: responsible_inventor
+        label: "Responsible Inventor"
+      - field: email
+        label: "Resp. Inv. Email"
+        link_type: email  
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
+
+  con_wpm:
+    label: "WPM Review Info"
+    fields:
+      - field: connections
+        label: "Counterparts" 
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
+      - field: wpm_url
+        label: "WPM Schedule"
+        link_type: url
+        link_text: "WPM schedule on Dropbox"
   
 
