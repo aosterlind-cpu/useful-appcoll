@@ -107,14 +107,14 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
                 pub_link = f"[{e.get('publication_number', 'N/A')}]"
                 pub_link += f"(https://patents.google.com/patent/{e.get('country', '')}{str(e.get('publication_number', '')).replace('/', '')})"
             else:
-                pub_link = "*none*"
+                pub_link = " \u2205 "
 
             lines.append(
                 f"| {_short_date(e.get('respond_by'), today)} "
-                f"| {e.get('matter', '*none*')} "
+                f"| {e.get('matter', ' \u2205 ')} "
                 f"| {link} "
                 f"| {pub_link} "
-                f"| {e.get('sep_status', '*none*') or '*none*'} "
+                f"| {e.get('sep_status', ' \u2205 ') or ' \u2205 '} "
             )
     else:
         lines.append("_No filing deadlines due today._")
@@ -162,8 +162,9 @@ def _build_task_block(task: dict, today: date) -> str:
     due_line = f"  *Due: {td}"
     if task.get("is_overdue"):
         orig = _fmt_date(task.get("original_target_date"))
-        due_line += f" \u2014 *Overdue ({orig})*"
-    due_line += "*   "
+        due_line += f" \u2014 Overdue ({orig})*"
+    else:
+        due_line += "* "
     due_line += f"   \u005e{str(sp).replace('.', '-')}"
     lines.append(due_line)
 
@@ -195,11 +196,11 @@ def _build_entry_block(entry: dict, today: date) -> str:
 
     header_parts = []
     if not matter or str(matter).strip() == "":
-        matter = "*none*"
+        matter = " \u2205 "
     header_parts.append(f"{matter}")
     entry_type = entry.get("task_type", "") or ""
     if not entry_type or str(entry_type).strip() == "":
-        entry_type = "*none*"
+        entry_type = " \u2205 "
     header_parts.append(f"{entry_type}")
 
     lines.append(f"\n### [{number}] \u00b7 {' \u00b7 '.join(header_parts)}")
@@ -212,11 +213,11 @@ def _build_entry_block(entry: dict, today: date) -> str:
 
     app_num = entry.get("application_number", "") or ""
     if not app_num or str(app_num).strip() == "":
-        app_num = "*none*"
+        app_num = " \u2205 "
     app_parts.append(f"**Appn #**: {app_num}")
     pub_number = entry.get("publication_number", "") or ""
     if not pub_number or str(pub_number).strip() == "":
-        pub_number = "*none*"
+        pub_number = " \u2205 "
     else:
         pub_number = f"[{entry.get('country', '')}{entry.get('publication_number', 'N/A')}]"
         pub_number += f"(https://patents.google.com/patent/{entry.get('country', '')}{str(entry.get('publication_number', '')).replace('/', '')})"
@@ -230,38 +231,39 @@ def _build_entry_block(entry: dict, today: date) -> str:
     
     sep = entry.get("sep_status") or ""
     if sep and isinstance(sep, str) and sep.strip() != "":
-        sep = sep.strip()
+        sep = f" *{sep.strip()}* "
     else:
-        sep = "_none_"
+        sep = " \u2205 "
     parts.append(f"**SEP Status**: {sep}")
     
     psa = entry.get("psa") or ""
     if psa and isinstance(psa, str) and psa.strip() != "":
-        psa = psa.strip()
+        psa = f" *{psa.strip()}* "
     else:
-        psa = "_none_"
+        psa = " \u2205 "
     parts.append(f"**PStrat**: {psa}")
 
     avanci = entry.get("avanci_status") or ""
     if avanci and isinstance(avanci, str) and avanci.strip() != "":
-        avanci = avanci.strip()
+        avanci = f" *{avanci.strip()}* "
     else:
-        avanci = "_none_"
+        avanci = " \u2205 "
     parts.append(f"**Avanci**: {avanci}")
 
     lines.append("  \u00b7  ".join(parts) + "  ")
 
     lines.append("  \u2014  ")
 
-    due_parts = []
-    if "overdue" in days_str.lower() or "today" in days_str.lower():
-        due_parts.append("\u26A0 ")
-    due_parts.append(f"**Due Date**: {_fmt_date(respond_by)} (next) ")
+    due_parts = f"**Due Date**: *{_fmt_date(respond_by)}*"
     final_due = entry.get("final_due") 
     if final_due:
-        due_parts.append(f" {_fmt_date(final_due)} (final)  ")
-    lines.append("  \u00b7  ".join(due_parts) + "  ")
-    lines.append(f"{days_str}")
+        due_parts += f" \u00b7 **Final**: *{_fmt_date(final_due)}* "
+    lines.append(due_parts)
+
+    if "overdue" in days_str.lower() or "today" in days_str.lower():
+        lines.append(f" \u26A0 {days_str}")
+    else:
+        lines.append(f"{days_str}")
 
     next_external = entry.get("next_external_task", "") or ""
     next_external = next_external.replace("|", "/")
