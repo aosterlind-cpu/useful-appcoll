@@ -80,7 +80,6 @@ def _build_file_header(today: date, csv_meta: dict) -> str:
 
 
 def _build_todays_todo(entries: list[dict], today: date) -> str:
-    date_str = _fmt_date(today)
     lines: list[str] = []
 
     # Filing deadlines due today
@@ -107,14 +106,14 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
                 pub_link = f"[{e.get('publication_number', 'N/A')}]"
                 pub_link += f"(https://patents.google.com/patent/{e.get('country', '')}{str(e.get('publication_number', '')).replace('/', '')})"
             else:
-                pub_link = " \u2205 "
+                pub_link = " \u2014 "
 
             lines.append(
                 f"| {_short_date(e.get('respond_by'), today)} "
-                f"| {e.get('matter', ' \u2205 ')} "
+                f"| {e.get('matter', ' \u2014 ')} "
                 f"| {link} "
                 f"| {pub_link} "
-                f"| {e.get('sep_status', ' \u2205 ') or ' \u2205 '} "
+                f"| {e.get('sep_status', ' \u2014 ') or ' \u2014 '} "
             )
     else:
         lines.append("_No filing deadlines due today._")
@@ -190,17 +189,16 @@ def _build_entry_block(entry: dict, today: date) -> str:
     deadline = entry.get("_effective_deadline")
     respond_by = entry.get("respond_by") or deadline
     days_str = _days_remaining_str(respond_by, today)
-    header_flag = _entry_header_flag(entry, today)
 
     lines: list[str] = []
 
     header_parts = []
     if not matter or str(matter).strip() == "":
-        matter = " \u2205 "
+        matter = " \u2014 "
     header_parts.append(f"{matter}")
     entry_type = entry.get("task_type", "") or ""
     if not entry_type or str(entry_type).strip() == "":
-        entry_type = " \u2205 "
+        entry_type = " \u2014 "
     header_parts.append(f"{entry_type}")
 
     lines.append(f"\n### [{number}] \u00b7 {' \u00b7 '.join(header_parts)}")
@@ -213,11 +211,11 @@ def _build_entry_block(entry: dict, today: date) -> str:
 
     app_num = entry.get("application_number", "") or ""
     if not app_num or str(app_num).strip() == "":
-        app_num = " \u2205 "
+        app_num = " \u2014 "
     app_parts.append(f"**Appn #**: {app_num}")
     pub_number = entry.get("publication_number", "") or ""
     if not pub_number or str(pub_number).strip() == "":
-        pub_number = " \u2205 "
+        pub_number = " \u2014 "
     else:
         pub_number = f"[{entry.get('country', '')}{entry.get('publication_number', 'N/A')}]"
         pub_number += f"(https://patents.google.com/patent/{entry.get('country', '')}{str(entry.get('publication_number', '')).replace('/', '')})"
@@ -233,21 +231,21 @@ def _build_entry_block(entry: dict, today: date) -> str:
     if sep and isinstance(sep, str) and sep.strip() != "":
         sep = f" *{sep.strip()}* "
     else:
-        sep = " \u2205 "
+        sep = " \u2014 "
     parts.append(f"**SEP Status**: {sep}")
     
     psa = entry.get("psa") or ""
     if psa and isinstance(psa, str) and psa.strip() != "":
         psa = f" *{psa.strip()}* "
     else:
-        psa = " \u2205 "
+        psa = " \u2014 "
     parts.append(f"**PStrat**: {psa}")
 
     avanci = entry.get("avanci_status") or ""
     if avanci and isinstance(avanci, str) and avanci.strip() != "":
         avanci = f" *{avanci.strip()}* "
     else:
-        avanci = " \u2205 "
+        avanci = " \u2014 "
     parts.append(f"**Avanci**: {avanci}")
 
     lines.append("  \u00b7  ".join(parts) + "  ")
@@ -311,7 +309,7 @@ def _build_entry_block(entry: dict, today: date) -> str:
 
     tasks: list[dict] = entry.get("_tasks", [])
     if tasks:
-        lines.append("#### Tasks \n")
+        lines.append("#### \u2014 TO DO \u2014 ")
         for task in tasks:
             lines.append(_build_task_block(task, today))
 
