@@ -187,3 +187,17 @@ task_help:
         label: "Foreign Associate"
       - field: foreign_associate_ref
         label: "Foreign Associate Ref"
+
+  us_issue_fee_review:
+    fields:
+      - field: connections
+        label: "Counterparts" 
+      - field: version
+        label: "Standard Release"
+      - field: relevant_standards_doc
+        label: "Standards Doc(s)"
+
+  us_issue_fee_finalize:
+    fields:
+      - field: allowance_date
+        label: "Allowance Date"

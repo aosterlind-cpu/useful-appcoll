@@ -5,7 +5,7 @@ rules:
   # ---------------------------------------------------------------------------
   # PCT NATIONAL PHASE FILING
   # ---------------------------------------------------------------------------
-  - id: 2_pct_national_phase_filing
+  - id: sep_pct_national_phase_filing
     description: Tasks for national phase filing of a PCT application.
     conditions:
       - field: task_status
@@ -14,15 +14,17 @@ rules:
       - field: task_type
         op: matches
         value: "(file.*PCT.*application|PCT.*file*national.*phase)"
+      - field: sep_status
+        op: is_not_null
     tasks:
-      - name: Meet with responsible inventor to draft broad and teaching claims
-        offset_days: 30
-        help_key: pct_national_phase_filing_inventor_meeting
-      - name: WPM review of national phase filing strategy and claims
+      - name: Meet with responsible inventor; draft claims
         offset_days: 20
+        help_key: pct_national_phase_filing_inventor_meeting
+      - name: Obtain WPM approval for claims
+        offset_days: 10
         help_key: pct_national_phase_filing_wpm
       - name: Finalize and file national phase application
-        offset_days: 15
+        offset_days: 1
         help_key: pct_national_phase_filing_finalize   
 
   # ---------------------------------------------------------------------------
@@ -43,17 +45,17 @@ rules:
         op: eq
         value: "Open"
     tasks:
-      - name: Discuss response strategy with responsible inventor
-        offset_days: 25
-        help_key: us_oa_sep_review_inventor_meeting
-      - name: Obtain WPM approval for proposed response strategy
+      - name: Meet with responsible inventor; discuss response strategy
         offset_days: 20
+        help_key: us_oa_sep_review_inventor_meeting
+      - name: Obtain WPM approval for response strategy
+        offset_days: 15
         help_key: us_oa_sep_wpm
       - name: Conduct USPTO interview
-        offset_days: 15
+        offset_days: 10
         help_key: us_oa_sep_interview
       - name: Finalize and file response
-        offset_days: 10
+        offset_days: 1
         help_key: us_oa_sep_finalize
 
   # ---------------------------------------------------------------------------
@@ -74,20 +76,20 @@ rules:
         op: eq
         value: "Open"
     tasks:
-      - name: Discuss response strategy with responsible inventor
-        offset_days: 25
+      - name: Meet with responsible inventor; discuss response strategy
+        offset_days: 15
         help_key: us_oa_sep_review_inventor_meeting
-      - name: Obtain WPM approval for proposed response strategy
-        offset_days: 20
+      - name: Obtain WPM approval for response strategy
+        offset_days: 10
         help_key: us_oa_sep_wpm
       - name: Finalize and file response with RCE
-        offset_days: 10
+        offset_days: 1
         help_key: us_oa_sep_finalize
   
   # ---------------------------------------------------------------------------
   # FOREIGN DIV FILING
   # ---------------------------------------------------------------------------
-  - id: us_oa_response_sep
+  - id: foreign_div_filing_sep
     description: Tasks for filing a foreign divisional application.
     conditions:
       - field: country
@@ -96,12 +98,14 @@ rules:
       - field: task_type
         op: matches
         value: "(file.*(divisional|div))"
+      - field: sep_status
+        op: is_not_null
       - field: task_status
         op: eq
         value: "Open"
     tasks:
-      - name: Discuss DIV strategy with responsible inventor; Draft DIV claims
-        offset_days: 20
+      - name: Meet with responsible inventor; draft DIV claims
+        offset_days: 15
         help_key: foreign_div_inventor_meeting
       - name: Obtain WPM approval for DIV claims
         offset_days: 10
@@ -114,7 +118,7 @@ rules:
   # ---------------------------------------------------------------------------
   # US CON FILING
   # ---------------------------------------------------------------------------
-  - id: us_oa_response_sep
+  - id: us_con_filing_sep
     description: Tasks for filing a US CON application.
     conditions:
       - field: country
@@ -123,12 +127,14 @@ rules:
       - field: task_type
         op: matches
         value: "(file.*(continuing|continuation))"
+      - field: sep_status
+        op: is_not_null
       - field: task_status
         op: eq
         value: "Open"
     tasks:
-      - name: Discuss US CON strategy with responsible inventor; Draft CON claims
-        offset_days: 20
+      - name: Meet with responsible inventor; draft CON claims
+        offset_days: 15
         help_key: con_inventor_meeting
       - name: Obtain WPM approval for CON claims
         offset_days: 10
@@ -155,14 +161,14 @@ rules:
         op: eq
         value: "Open"
     tasks:
-      - name: Discuss response strategy with responsible inventor
-        offset_days: 25
+      - name: Meet with responsible inventor; discuss response strategy
+        offset_days: 15
         help_key: us_oa_sep_review_inventor_meeting
-      - name: Obtain WPM approval for proposed response strategy
-        offset_days: 20
-        help_key: us_oa_sep_wpm
-      - name: Finalize instructions and send to foreign associate
+      - name: Obtain WPM approval for response strategy
         offset_days: 10
+        help_key: us_oa_sep_wpm
+      - name: Finalize and send instructions to foreign associate
+        offset_days: 5
         help_key: us_oa_sep_finalize
 
   # ---------------------------------------------------------------------------
@@ -182,8 +188,32 @@ rules:
         value: "Open"
     tasks:
       - name: Review for amendments
-        offset_days: 20
+        offset_days: 3
         help_key: foreign_issue_fee_review
       - name: Finalize instructions and send to foreign associate
-        offset_days: 15
+        offset_days: 1
         help_key: foreign_issue_fee_finalize
+
+  # ---------------------------------------------------------------------------
+  # US ISSUE FEE
+  # ---------------------------------------------------------------------------
+  - id: us_issue_fee
+    description: Tasks for responding to US issue fee.
+    conditions:
+      - field: country
+        op: eq
+        value: "US"
+      - field: task_type
+        op: matches
+        value: "(Issue.*Fee)"
+      - field: task_status
+        op: eq
+        value: "Open"
+    tasks:
+      - name: Review for 312 amendment/statement on allowance
+        offset_days: 3
+        help_key: us_issue_fee_review
+      - name: Pay issue fee; file 312 amendment/statement
+        offset_days: 1
+        help_key: us_issue_fee_finalize
+
