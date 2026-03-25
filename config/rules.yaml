@@ -3,29 +3,59 @@
 rules:
   
   # ---------------------------------------------------------------------------
-  # PCT NATIONAL PHASE FILING
+  # SEP PCT FILING
   # ---------------------------------------------------------------------------
-  - id: sep_pct_national_phase_filing
-    description: Tasks for national phase filing of a PCT application.
+  - id: sep_pct_filing
+    description: Tasks for filing of a PCT application.
     conditions:
       - field: task_status
         op: eq
         value: "Open"
       - field: task_type
         op: matches
-        value: "(file.*PCT.*application|PCT.*file*national.*phase)"
+        value: "(file.*PCT.*application)"
       - field: sep_status
         op: is_not_null
     tasks:
-      - name: Meet with responsible inventor; draft claims
+      - name: Claims review meeting with inventor
         offset_days: 20
-        help_key: pct_national_phase_filing_inventor_meeting
-      - name: Obtain WPM approval for claims
+        help_key: pct_filing_inventor_meeting
+      - name: Confirm SEP status
+        offset_days: 20
+      - name: Revise claims from provisional application
+        offset_days: 15
+      - name: WPM approval for claims
         offset_days: 10
-        help_key: pct_national_phase_filing_wpm
-      - name: Finalize and file national phase application
-        offset_days: 1
-        help_key: pct_national_phase_filing_finalize   
+        help_key: pct_filing_wpm
+      - name: Finalize and file PCT application
+        offset_days: 5
+        help_key: pct_filing_finalize   
+
+  # ---------------------------------------------------------------------------
+  # PCT FILING
+  # ---------------------------------------------------------------------------
+  - id: pct_filing
+    description: Tasks for filing of a PCT application.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: matches
+        value: "(file.*PCT.*application)"
+      - field: sep_status
+        op: is_null
+    tasks:
+      - name: Claims review meeting with inventor
+        offset_days: 20
+        help_key: inventor_email
+      - name: Confirm SEP status
+        offset_days: 20
+      - name: Revise claims from provisional application
+        offset_days: 15
+      - name: Finalize and file PCT application
+        offset_days: 5
+        help_key: pct_filing_finalize  
 
   # ---------------------------------------------------------------------------
   # SEP OFFICE ACTION RESPONSE
@@ -38,56 +68,28 @@ rules:
         value: "US"
       - field: task_type
         op: matches
-        value: "(Respond to Non.?Final Office Action|Respond to Office Action|Office Action Response|Respond to Final Office Action|Respond to Final OA|Final Office Action|Final OA)"
+        value: "(Respond.*Office Action|Office Action.*Response|Reply.*Office Action|Respond*.Advisory.*Action|Reply.*Advisory.*Action|Advisory.*Action.*Response)"
       - field: sep_status
         op: is_not_null
       - field: task_status
         op: eq
         value: "Open"
     tasks:
-      - name: Meet with responsible inventor; discuss response strategy
-        offset_days: 20
-        help_key: us_oa_sep_review_inventor_meeting
-      - name: Obtain WPM approval for response strategy
+      - name: Response strategy meeting with inventor
         offset_days: 15
-        help_key: us_oa_sep_wpm
-      - name: Conduct USPTO interview
+        help_key: us_oa_sep_review_inventor_meeting
+      - name: WPM approval for response strategy
         offset_days: 10
+        help_key: us_oa_sep_wpm
+      - name: Examiner interview
+        offset_days: 5
         help_key: us_oa_sep_interview
       - name: Finalize and file response
         offset_days: 1
         help_key: us_oa_sep_finalize
-
-  # ---------------------------------------------------------------------------
-  # SEP ADVISORY ACTION RESPONSE
-  # ---------------------------------------------------------------------------
-  - id: us_oa_response_sep
-    description: Tasks for responding to a US advisory action marked as SEP.
-    conditions:
-      - field: country
-        op: eq
-        value: "US"
-      - field: task_type
-        op: matches
-        value: "(Respond.*Advisory.*Action|Response.*Advisory.*Action|Advisory.*Action.*Response)"
-      - field: sep_status
-        op: is_not_null
-      - field: task_status
-        op: eq
-        value: "Open"
-    tasks:
-      - name: Meet with responsible inventor; discuss response strategy
-        offset_days: 15
-        help_key: us_oa_sep_review_inventor_meeting
-      - name: Obtain WPM approval for response strategy
-        offset_days: 10
-        help_key: us_oa_sep_wpm
-      - name: Finalize and file response with RCE
-        offset_days: 1
-        help_key: us_oa_sep_finalize
   
   # ---------------------------------------------------------------------------
-  # FOREIGN DIV FILING
+  # SEP FOREIGN DIV FILING
   # ---------------------------------------------------------------------------
   - id: foreign_div_filing_sep
     description: Tasks for filing a foreign divisional application.
@@ -104,19 +106,22 @@ rules:
         op: eq
         value: "Open"
     tasks:
-      - name: Meet with responsible inventor; draft DIV claims
+      - name: Claims review meeting with inventor
         offset_days: 15
         help_key: foreign_div_inventor_meeting
-      - name: Obtain WPM approval for DIV claims
+      - name: Draft DIV claims
+        offset_days: 12
+        help_key: foreign_div_draft
+      - name: WPM approval for DIV claims
         offset_days: 10
         help_key: foreign_div_wpm
       - name: Finalize and file foreign DIV
-        offset_days: 5
+        offset_days: 7
         help_key: foreign_div_finalize
 
   
   # ---------------------------------------------------------------------------
-  # US CON FILING
+  # SEP US CON FILING
   # ---------------------------------------------------------------------------
   - id: us_con_filing_sep
     description: Tasks for filing a US CON application.
@@ -133,14 +138,45 @@ rules:
         op: eq
         value: "Open"
     tasks:
-      - name: Meet with responsible inventor; draft CON claims
+      - name: Claims review meeting with inventor
         offset_days: 15
         help_key: con_inventor_meeting
-      - name: Obtain WPM approval for CON claims
+      - name: Draft CON claims
+        offset_days: 12
+      - name: WPM approval for CON claims
         offset_days: 10
         help_key: con_wpm
       - name: Finalize and file US CON 
-        offset_days: 5
+        offset_days: 7
+        help_key: con_finalize
+
+  # ---------------------------------------------------------------------------
+  # US CON FILING
+  # ---------------------------------------------------------------------------
+  - id: us_con_filing
+    description: Tasks for filing a US CON application.
+    conditions:
+      - field: country
+        op: eq
+        value: "US"
+      - field: task_type
+        op: matches
+        value: "(file.*(continuing|continuation))"
+      - field: sep_status
+        op: is_null
+      - field: task_status
+        op: eq
+        value: "Open"
+    tasks:
+      - name: Claims review meeting with inventor
+        offset_days: 15
+        help_key: con_inventor_meeting
+      - name: Confirm SEP status
+        offset_days: 15
+      - name: Draft CON claims
+        offset_days: 12
+      - name: Finalize and file US CON 
+        offset_days: 7
         help_key: con_finalize
 
   # ---------------------------------------------------------------------------
@@ -161,14 +197,14 @@ rules:
         op: eq
         value: "Open"
     tasks:
-      - name: Meet with responsible inventor; discuss response strategy
+      - name: Response strategy meeting with inventor
         offset_days: 15
         help_key: us_oa_sep_review_inventor_meeting
-      - name: Obtain WPM approval for response strategy
-        offset_days: 10
+      - name: WPM approval for response strategy
+        offset_days: 12
         help_key: us_oa_sep_wpm
       - name: Finalize and send instructions to foreign associate
-        offset_days: 5
+        offset_days: 7
         help_key: us_oa_sep_finalize
 
   # ---------------------------------------------------------------------------
@@ -188,10 +224,10 @@ rules:
         value: "Open"
     tasks:
       - name: Review for amendments
-        offset_days: 3
+        offset_days: 10
         help_key: foreign_issue_fee_review
       - name: Finalize instructions and send to foreign associate
-        offset_days: 1
+        offset_days: 7
         help_key: foreign_issue_fee_finalize
 
   # ---------------------------------------------------------------------------
@@ -216,4 +252,87 @@ rules:
       - name: Pay issue fee; file 312 amendment/statement
         offset_days: 1
         help_key: us_issue_fee_finalize
+
+  # ---------------------------------------------------------------------------
+  # NEW PROVISIONAL APPLICATION
+  # ---------------------------------------------------------------------------
+  - id: provisional_filing
+    description: Tasks for preparing a new provisional application.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: matches
+        value: "(file.*provisional.*application)"
+      - field: matter_type
+        op: matches
+        value: "(?i)provisional"
+    tasks:
+      - name: Disclosure meeting with inventor
+        offset_days: 25
+        help_key: inventor_email
+      - name: FCR meeting
+        offset_days: 20
+        help_key: fcr_meeting
+      - name: Draft application
+        offset_days: 15
+      - name: Finalize/file application
+        offset_days: 5
+
+  # ---------------------------------------------------------------------------
+  # SEP PCT US FILING
+  # ---------------------------------------------------------------------------
+  - id: sep_pct_us_filing
+    description: Tasks for national phase filing of a PCT application marked as SEP.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: matches
+        value: "(file US national phase application)"
+      - field: sep_status
+        op: is_not_null
+    tasks:
+      - name: Claims review meeting with inventor
+        offset_days: 25
+        help_key: pct_filing_inventor_meeting
+      - name: Identify foreign jurisdictions for national phase entry
+        offset_days: 20
+      - name: Revise claims from PCT application
+        offset_days: 15
+      - name: WPM approval for claims
+        offset_days: 10
+        help_key: pct_filing_wpm
+      - name: Finalize and file in US and foreign jurisdictions
+        offset_days: 5
+        help_key: pct_filing_finalize  
+
+  # ---------------------------------------------------------------------------
+  # PCT US FILING
+  # ---------------------------------------------------------------------------
+  - id: pct_us_filing
+    description: Tasks for national phase filing of a PCT application.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: matches
+        value: "(file US national phase application)"
+      - field: sep_status
+        op: is_null
+    tasks:
+      - name: Claims review meeting with inventor
+        offset_days: 20
+        help_key: pct_filing_inventor_meeting
+      - name: Confirm SEP status
+        offset_days: 20
+      - name: Identify foreign jurisdictions for national phase entry
+        offset_days: 20
+      - name: Revise claims from PCT application
+        offset_days: 15
+      - name: Finalize and file in US and foreign jurisdictions
+        offset_days: 5
 
