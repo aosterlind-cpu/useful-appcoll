@@ -1,7 +1,7 @@
 # Useful Appcoll -- Automated Script 
 
->Local executable that makes AppColl useful without requiring an API. 
->Configured to output in Markdown format adapted to Obsidian.
+> Local executable that makes AppColl useful without requiring an API. 
+> Configured to output in Markdown format adapted to Obsidian.
 
 ---
 
