@@ -4,8 +4,7 @@ Builds the final Markdown output string from scored, task-enriched entries.
 """
 
 import logging
-from datetime import date, datetime, timedelta
-
+from datetime import date, datetime
 from config.globals import TASK_GENERATION_THRESHOLD
 
 log = logging.getLogger(__name__)
@@ -118,12 +117,31 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
     else:
         lines.append("_No filing deadlines due today._")
 
-    # Tasks due today
     task_rows = []
     for entry in entries:
         for task in entry.get("_tasks", []):
-            if task.get("target_date") <= today + timedelta(days=1) and not task.get("_completed"):
+            ## if task.get("target_date") <= today + timedelta(days=1) and not task.get("_completed"):
+            ##    task_rows.append((entry, task))
+            if len(task_rows) == 0 and not task.get("_completed"):
                 task_rows.append((entry, task))
+                log.info(f"Append 1st task for {entry.get('matter','')}")
+                continue
+            if task.get("_completed"):
+                continue
+            current_matter = str(entry.get("matter", "")).strip().lower()
+            current_sp = float(task.get("subpriority", ""))
+            last_entry, last_task = task_rows[-1]
+            last_matter = str(last_entry.get("matter", "")).strip().lower()
+            last_sp = float(last_task.get("subpriority", ""))
+            if last_matter != current_matter:
+                task_rows.append((entry, task))
+                log.info(f"Append new task for {entry.get('matter','')}")
+            else:
+                if last_sp > current_sp:
+                    task_rows[-1] = (entry, last_task)
+                    log.info(f"Replace last task for {entry.get('matter','')}")
+
+
 
     lines.append("\n### Docket Entry Priority Tasks\n")
     if task_rows:

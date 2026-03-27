@@ -19,7 +19,7 @@ from config.globals import (
 log = logging.getLogger(__name__)
 
 # Match entry headings: ### [N] matter · task_type [· status_flag]
-_HEADING_RE = re.compile(r'^### \[\d+\] (.+)$')
+_HEADING_RE = re.compile(r'^### \[\d+\] · (.+)$')
 _STATUS_SUFFIX_RE = re.compile(r'\s+\u00b7\s+(?:Overdue|\d+ days? remaining)$')
 _CHECKED_RE = re.compile(r'^- \[x\] \*\*(.+)\*\*', re.IGNORECASE)
 
