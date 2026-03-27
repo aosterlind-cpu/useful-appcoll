@@ -131,7 +131,7 @@ rules:
         value: "US"
       - field: task_type
         op: matches
-        value: "(file.*(continuing|continuation))"
+        value: "(file.*(continuing|continuation|con))"
       - field: sep_status
         op: is_not_null
       - field: task_status
@@ -281,7 +281,7 @@ rules:
         offset_days: 5
 
   # ---------------------------------------------------------------------------
-  # SEP PCT US FILING
+  # SEP NATIONAL PHASE FILING
   # ---------------------------------------------------------------------------
   - id: sep_pct_us_filing
     description: Tasks for national phase filing of a PCT application marked as SEP.
@@ -291,7 +291,7 @@ rules:
         value: "Open"
       - field: task_type
         op: matches
-        value: "(file US national phase application)"
+        value: "(file national phase applications)"
       - field: sep_status
         op: is_not_null
     tasks:
@@ -310,7 +310,7 @@ rules:
         help_key: pct_filing_finalize  
 
   # ---------------------------------------------------------------------------
-  # PCT US FILING
+  # NATIONAL PHASE FILING
   # ---------------------------------------------------------------------------
   - id: pct_us_filing
     description: Tasks for national phase filing of a PCT application.
@@ -320,7 +320,7 @@ rules:
         value: "Open"
       - field: task_type
         op: matches
-        value: "(file US national phase application)"
+        value: "(file national phase applications)"
       - field: sep_status
         op: is_null
     tasks:
