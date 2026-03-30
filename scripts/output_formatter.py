@@ -24,7 +24,7 @@ def _fmt_date(d) -> str:
 def _short_date(d, today) -> str:
     if d is None:
         return ""
-    return f" {d.month}/{d.day} " if isinstance(d, date) else str(d)
+    return f"{d.month}/{d.day}" if isinstance(d, date) else str(d)
 
 
 def _days_remaining_str(deadline: date | None, today: date) -> str:
@@ -55,6 +55,19 @@ def _is_matter_overdue(entry: dict, today: date) -> bool:
         return True
     return False
 
+def _is_non_extendable(entry: dict) -> bool:
+    ne = False
+    _comments = entry.get("comments", "") or ""
+    _deadline_type = entry.get("deadline_type", "") or ""
+    if "non-extendable" in _comments.lower():
+        ne = True
+    if "hard" in _deadline_type.lower():
+        ne = True
+    if "final" in _comments.lower():
+        ne = True
+    if "final" in _deadline_type.lower():
+        ne = True
+    return ne
 
 def _build_file_header(today: date, csv_meta: dict) -> str:
     iso_date = today.strftime("%Y-%m-%d")
@@ -107,8 +120,14 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
             else:
                 pub_link = " \u2014 "
 
+            due = ""
+            if _is_non_extendable(e):
+                due = f"<span style=\"color:red; font-weight:bold\">{_short_date(e.get('respond_by'), today)}</span>"
+            else:
+                due = f"<span style=\"color:black; font-weight:normal\">{_short_date(e.get('respond_by'), today)}</span>"
+
             lines.append(
-                f"| {_short_date(e.get('respond_by'), today)} "
+                f"| {due} "
                 f"| {e.get('matter', ' \u2014 ')} "
                 f"| {link} "
                 f"| {pub_link} "
@@ -150,8 +169,13 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
         for e, t in task_rows:
             name_link = f"[[#^{str(t['subpriority']).replace('.', '-')}\\|{t['display_name']}]]"
             sp_link = f"[[#^{str(t['subpriority']).replace('.', '-')}\\|{t['subpriority']}]]"
+            due = ""
+            if t['is_overdue']:
+                due = f"<span style=\"color:red; font-weight:bold\">{_short_date(t['original_target_date'], today)}</span>"
+            else:
+                due = f"<span style=\"color:black; font-weight:normal\">{_short_date(t['target_date'], today)}</span>"
             lines.append(
-                f"| {_short_date(t['target_date'], today)} "
+                f"| {due} "
                 f"| {sp_link} "
                 f"| {name_link} "
                 f"| {e.get('matter', 'N/A')} "

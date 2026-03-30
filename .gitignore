@@ -46,3 +46,5 @@ debug/
 appcoll_exports/
 sharepoint_context.json
 
+work_*
+
