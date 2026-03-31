@@ -43,6 +43,9 @@ PRIORITY_SCORE_NO_DEADLINE: int = 0
 # Score offset decrease applied when deadline is not hard but is extendible 
 PRIORITY_SCORE_EXTENDIBLE: int = -5
 
+# Score offset decrease applied when deadline is FOA Response - 2 month deadline 
+FOA_2_MO_OFFSET: int = -25
+
 # Score offset increase applied when deadline is not extendible 
 PRIORITY_SCORE_NON_EXTENDIBLE: int = 5
 

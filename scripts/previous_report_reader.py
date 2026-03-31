@@ -23,7 +23,7 @@ _HEADING_RE = re.compile(r'^### \[\d+\] · (.+)$')
 _STATUS_SUFFIX_RE = re.compile(r'\s+\u00b7\s+(?:Overdue|\d+ days? remaining)$')
 _CHECKED_RE = re.compile(r'^- \[x\] \*\*(.+)\*\*', re.IGNORECASE)
 
-_SEP = f" \u00b7 "
+_SEP = " \u00b7 "
 
 
 def load_completed_tasks(today: date) -> dict[tuple[str, str], set[str]]:

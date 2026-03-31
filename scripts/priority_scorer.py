@@ -13,8 +13,7 @@ from config.globals import (
     PRIORITY_SCORE_OFFSETS,
     PRIORITY_SCORE_OVERDUE,
     PRIORITY_SCORE_NO_DEADLINE,
-    PRIORITY_SCORE_EXTENDIBLE,
-    PRIORITY_SCORE_NON_EXTENDIBLE,
+    FOA_2_MO_OFFSET,
     PRIMARY_DEADLINE_FIELD,
     FALLBACK_DEADLINE_FIELD,
 )
@@ -96,7 +95,7 @@ def compute_priority_score(entry: dict, today: date | None = None) -> tuple[int,
             break
     
     if days_until < 1:
-        if("non-extendable" in comments.lower() or "hard" in deadline_type.lower()):
+        if("non-extendable" in comments.lower() or "hard" in deadline_type.lower() or "final" in deadline_type.lower() or "final" in comments.lower()):
             score = PRIORITY_SCORE_OVERDUE + 5
             log.info(f"Task ID {entry.get('task_id', '')}: {score} (Urgent hard deadline)")
         else:
@@ -104,7 +103,7 @@ def compute_priority_score(entry: dict, today: date | None = None) -> tuple[int,
             log.info(f"Task ID {entry.get('task_id', '')}: {score} (Overdue)")
 
     if str(entry.get("task_type")).strip() == "Respond to Final Office Action - 2 Month Deadline":
-        score = score + PRIORITY_SCORE_EXTENDIBLE if score > PRIORITY_SCORE_EXTENDIBLE else 0
+        score = score + FOA_2_MO_OFFSET if score > abs(FOA_2_MO_OFFSET) else 0
         log.info(f"Task ID {entry.get('task_id', '')}: {score} FOA 2 month deadline (extendible decrease)")
     
 
