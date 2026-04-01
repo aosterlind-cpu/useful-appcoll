@@ -3,9 +3,11 @@
 Builds the final Markdown output string from scored, task-enriched entries.
 """
 
+import glob
 import logging
 from datetime import date, datetime
-from config.globals import TASK_GENERATION_THRESHOLD
+from pathlib import Path
+from config.globals import TASK_GENERATION_THRESHOLD, PATH_PREFIX
 
 log = logging.getLogger(__name__)
 
@@ -13,6 +15,28 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+def _get_file_path(entry: dict) -> Path | None:
+    matter_family = entry.get("patent_family", "") or ""
+    if not matter_family or str(matter_family).strip() == "":
+        return None
+    year = "20" + matter_family.split("-")[0].strip() 
+    base = PATH_PREFIX / f"{year}" / "(1) 3GPP"
+    match_dirs = [p for p in base.glob(f"{matter_family}*") if p.is_dir()]
+    if not match_dirs:
+        return None    
+    return match_dirs[0]
+
+def _matter_path_link(entry: dict) -> str:
+    path = _get_file_path(entry)
+    if not path:
+        return entry.get("matter", "_none_")
+    path_str = str(path).strip().replace(" ", "%20")
+    if not path_str or path_str == "":
+        return entry.get("matter", "_none_")
+    return f"[{entry.get('matter', '_none_')}](file://{path_str})"
+
+
 
 def _fmt_date(d) -> str:
     if d is None:
@@ -128,7 +152,7 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
 
             lines.append(
                 f"| {due} "
-                f"| {e.get('matter', ' \u2014 ')} "
+                f"| {_matter_path_link(e)} "
                 f"| {link} "
                 f"| {pub_link} "
                 f"| {e.get('sep_status', ' \u2014 ') or ' \u2014 '} "
@@ -178,7 +202,7 @@ def _build_todays_todo(entries: list[dict], today: date) -> str:
                 f"| {due} "
                 f"| {sp_link} "
                 f"| {name_link} "
-                f"| {e.get('matter', 'N/A')} "
+                f"| {_matter_path_link(e)} "
                 f"| {e.get('task_type', 'N/A')[:38] + ('...' if len(str(e.get('task_type', '')))>38 else '')} |"    
             )
     else:
@@ -256,13 +280,12 @@ def _build_entry_block(entry: dict, today: date) -> str:
         app_num = " \u2014 "
     app_parts.append(f"**Appn #**: {app_num}")
     pub_number = entry.get("publication_number", "") or ""
-    if not pub_number or str(pub_number).strip() == "":
-        pub_number = " \u2014 "
-    else:
+    if pub_number and str(pub_number).strip() != "":
         pub_number = f"[{entry.get('country', '')}{entry.get('publication_number', 'N/A')}]"
         pub_number += f"(https://patents.google.com/patent/{entry.get('country', '')}{str(entry.get('publication_number', '')).replace('/', '')})"
+        app_parts.append(f"**Pub #**: {pub_number}  ")
 
-    app_parts.append(f"**Pub #**: {pub_number}  ")
+    app_parts.append(f"**Dropbox**: {_matter_path_link(entry)}")
 
     lines.append("  \u00b7  ".join(app_parts) + "  ")
 

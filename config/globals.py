@@ -12,6 +12,7 @@ HOW TO EDIT:
 """
 
 from datetime import date  # noqa: F401  (imported for type annotation use by callers)
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # PRIORITY SCORING
@@ -95,6 +96,9 @@ FALLBACK_DEADLINE_FIELD: str = "final_due"
 
 # Open/closed filter: if True, only process entries where closed_on is null.
 OPEN_ENTRIES_ONLY: bool = True
+
+# Dropbox file path
+PATH_PREFIX: Path = Path.home() / "Ofinno Dropbox" / "Ofinno Team - Patents"
 
 # ---------------------------------------------------------------------------
 # DATE HANDLING

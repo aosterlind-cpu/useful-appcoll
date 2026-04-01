@@ -99,9 +99,7 @@ rules:
         value: "US"
       - field: task_type
         op: matches
-        value: "(file.*(divisional|div))"
-      - field: sep_status
-        op: is_not_null
+        value: "(divisional|div)"
       - field: task_status
         op: eq
         value: "Open"
@@ -132,8 +130,6 @@ rules:
       - field: task_type
         op: matches
         value: "(file.*(continuing|continuation|con))"
-      - field: sep_status
-        op: is_not_null
       - field: task_status
         op: eq
         value: "Open"
@@ -146,35 +142,6 @@ rules:
       - name: WPM approval for CON claims
         offset_days: 10
         help_key: con_wpm
-      - name: Finalize and file US CON 
-        offset_days: 7
-        help_key: con_finalize
-
-  # ---------------------------------------------------------------------------
-  # US CON FILING
-  # ---------------------------------------------------------------------------
-  - id: us_con_filing
-    description: Tasks for filing a US CON application.
-    conditions:
-      - field: country
-        op: eq
-        value: "US"
-      - field: task_type
-        op: matches
-        value: "(file.*(continuing|continuation))"
-      - field: sep_status
-        op: is_null
-      - field: task_status
-        op: eq
-        value: "Open"
-    tasks:
-      - name: Claims review meeting with inventor
-        offset_days: 15
-        help_key: con_inventor_meeting
-      - name: Confirm SEP status
-        offset_days: 15
-      - name: Draft CON claims
-        offset_days: 12
       - name: Finalize and file US CON 
         offset_days: 7
         help_key: con_finalize
@@ -281,6 +248,62 @@ rules:
         offset_days: 5
 
   # ---------------------------------------------------------------------------
+  # SEP US NATIONAL PHASE FILING
+  # ---------------------------------------------------------------------------
+  - id: sep_pct_us_filing
+    description: Tasks for national phase filing of a PCT application marked as SEP.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: matches
+        value: "(file US national phase application)"
+      - field: sep_status
+        op: is_not_null
+    tasks:
+      - name: Claims review meeting with inventor
+        offset_days: 25
+        help_key: pct_filing_inventor_meeting
+      - name: Identify foreign jurisdictions for national phase entry
+        offset_days: 20
+      - name: Revise claims from PCT application
+        offset_days: 15
+      - name: WPM approval for claims
+        offset_days: 10
+        help_key: pct_filing_wpm
+      - name: Finalize and file in US and foreign jurisdictions
+        offset_days: 5
+        help_key: pct_filing_finalize  
+
+  # ---------------------------------------------------------------------------
+  # US NATIONAL PHASE FILING
+  # ---------------------------------------------------------------------------
+  - id: pct_us_filing
+    description: Tasks for national phase filing of a PCT application.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: matches
+        value: "(file US national phase application)"
+      - field: sep_status
+        op: is_null
+    tasks:
+      - name: Claims review meeting with inventor
+        offset_days: 20
+        help_key: pct_filing_inventor_meeting
+      - name: Confirm SEP status
+        offset_days: 20
+      - name: Identify foreign jurisdictions for national phase entry
+        offset_days: 20
+      - name: Revise claims from PCT application
+        offset_days: 15
+      - name: Finalize and file in US and foreign jurisdictions
+        offset_days: 5
+
+  # ---------------------------------------------------------------------------
   # SEP NATIONAL PHASE FILING
   # ---------------------------------------------------------------------------
   - id: sep_pct_us_filing
@@ -302,10 +325,12 @@ rules:
         offset_days: 20
       - name: Revise claims from PCT application
         offset_days: 15
+      - name: Prepare claims ↔ spec mapping for EP
+        offset_days: 12
       - name: WPM approval for claims
         offset_days: 10
         help_key: pct_filing_wpm
-      - name: Finalize and file in US and foreign jurisdictions
+      - name: Finalize and file in foreign jurisdictions
         offset_days: 5
         help_key: pct_filing_finalize  
 
@@ -320,7 +345,7 @@ rules:
         value: "Open"
       - field: task_type
         op: matches
-        value: "(file national phase applications)"
+        value: "(file national phase application)"
       - field: sep_status
         op: is_null
     tasks:
@@ -333,6 +358,26 @@ rules:
         offset_days: 20
       - name: Revise claims from PCT application
         offset_days: 15
-      - name: Finalize and file in US and foreign jurisdictions
+      - name: Prepare claims ↔ spec mapping for EP
+        offset_days: 12
+      - name: Finalize and file in foreign jurisdictions
         offset_days: 5
 
+  # ---------------------------------------------------------------------------
+  # EP/WO Response - Drafting Response (Non-Accelerated)
+  # ---------------------------------------------------------------------------
+  - id: pct_us_filing
+    description: Tasks for national phase filing of a PCT application.
+    conditions:
+      - field: task_status
+        op: eq
+        value: "Open"
+      - field: task_type
+        op: matches
+        value: "(EP/WO Response)"
+    tasks:
+      - name: Draft EP/WO Response
+        offset_days: 15
+        help_key: ep_wo_response_drafting
+      - name: Finalize and file
+        offset_days: 5

@@ -218,3 +218,8 @@ task_help:
       - field: foreign_associate_ref
         label: "Foreign Associate Ref"
 
+  ep_wo_response_drafting:
+    fields:
+      - field: connections
+        label: "Counterparts" 
+
