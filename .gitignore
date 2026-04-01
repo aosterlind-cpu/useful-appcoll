@@ -47,4 +47,6 @@ appcoll_exports/
 sharepoint_context.json
 
 work_*
+*.in
+
 
